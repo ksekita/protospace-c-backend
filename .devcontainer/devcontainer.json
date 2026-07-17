@@ -20,6 +20,7 @@
 	],
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "java -version",
+	"postCreateCommand": "sudo apt-get update && sudo apt-get install -y postgresql-client",
 	// Configure tool-specific properties.
 	"customizations": {
 		"vscode": {
