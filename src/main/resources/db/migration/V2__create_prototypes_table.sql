@@ -1,0 +1,9 @@
+CREATE TABLE prototypes(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    catch_copy VARCHAR(255) NOT NULL,
+    concept TEXT NOT NULL,
+    image VARCHAR(255),
+    user_id BIGINT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
