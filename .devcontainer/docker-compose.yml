@@ -59,4 +59,4 @@ services:
 networks:
   shared-net:
     name: shared-net
-    driver: bridge
+    driver: true
