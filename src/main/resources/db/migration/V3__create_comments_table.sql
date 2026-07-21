@@ -1,0 +1,8 @@
+CREATE TABLE comments (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    content VARCHAR(512) NOT NULL,
+    user_id BIGINT NOT NULL,
+    prototype_id BIGINT NOT NULL,
+    FOREIGN KEY (prototype_id) REFERENCES prototypes(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
