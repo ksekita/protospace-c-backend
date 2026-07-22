@@ -87,8 +87,8 @@ class UserControllerTest {
       verify(userService).insertUser(userDtoCaptor.capture());
       UserDto capturedDto = userDtoCaptor.getValue();
       assertThat(capturedDto.getEmail()).isEqualTo("test@example.com");
-      assertThat(capturedDto.getUsername()).isEqualTo("テスト太郎");
-      assertThat(capturedDto.getPositions()).containsExactly("リーダー");
+      assertThat(capturedDto.getPosition()).isEqualTo("リーダー");
+      assertThat(capturedDto.getJob()).isEqualTo("エンジニア");
     }
 
     @Test
@@ -194,8 +194,8 @@ class UserControllerTest {
     dto.setEmail("test@example.com");
     dto.setPassword("ValidPassword123!");
     dto.setPasswordConfirm("ValidPassword123!");
-    dto.setPositions(List.of("リーダー"));
-    dto.setJobs(List.of("エンジニア"));
+    dto.setPosition("リーダー");
+    dto.setJob("エンジニア");
     return dto;
   }
 }

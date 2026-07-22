@@ -48,8 +48,8 @@ class UserServiceTest {
     validUserDto.setEmail("test@example.com");
     validUserDto.setPassword("Password123456!");
     validUserDto.setPasswordConfirm("Password123456!");
-    validUserDto.setPositions(List.of("リーダー", "マネージャー"));
-    validUserDto.setJobs(List.of("エンジニア"));
+    validUserDto.setPosition("リーダー");
+    validUserDto.setJob("エンジニア");
   }
 
   @Nested
@@ -78,9 +78,8 @@ class UserServiceTest {
       assertThat(capturedEntity.getEmail()).isEqualTo("test@example.com");
       assertThat(capturedEntity.getPasswordHash()).isEqualTo("hashedPassword123");
 
-      // 複数登録（リスト要素）がすべて正しく呼び出されたか検証
+      // 役職・職業がそれぞれ1回ずつ登録されたか検証
       verify(positionRepository).insert(10L, "リーダー");
-      verify(positionRepository).insert(10L, "マネージャー");
       verify(jobRepository).insert(10L, "エンジニア");
     }
 

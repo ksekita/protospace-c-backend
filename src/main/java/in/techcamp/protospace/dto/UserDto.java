@@ -25,8 +25,9 @@ public class UserDto {
   @NotBlank(message = "パスワード(確認)は必須です")
   private String passwordConfirm;
 
-  // フロントエンドから役職などのデータを配列形式で受け取るため追加
-  // 格納するだけなのでアノテーションはない
-  private List<String> positions;
-  private List<String> jobs;
+  @NotBlank(message = "役職は必須です")
+  private String position;
+
+  @NotBlank(message = "職業は必須です")
+  private String job;
 }

@@ -29,12 +29,7 @@ public class UserService {
 
   // ユーザー情報の取得
   public UserEntity selectById(Long id) {
-    UserEntity user = userRepository.selectById(id);
-    if (user != null) {
-      user.setPositions(positionRepository.findByUserId(id));
-      user.setJobs(jobRepository.findByUserId(id));
-    }
-    return user;
+    return userRepository.selectById(id);
   }
 
   // ユーザー新規登録
@@ -60,21 +55,13 @@ public class UserService {
     Long userId = user.getId();
 
     // 役職(positions)の登録
-    if (userDto.getPositions() != null && !userDto.getPositions().isEmpty()) {
-      for (String position : userDto.getPositions()) {
-        if (position != null && !position.isBlank()) {
-          positionRepository.insert(userId, position);
-        }
-      }
+    if (userDto.getPosition() != null && !userDto.getPosition().isBlank()) {
+      positionRepository.insert(userId, userDto.getPosition());
     }
 
     // 職業(jobs)の登録
-    if (userDto.getJobs() != null && !userDto.getJobs().isEmpty()) {
-      for (String job : userDto.getJobs()) {
-        if (job != null && !job.isBlank()) {
-          jobRepository.insert(userId, job);
-        }
-      }
+    if (userDto.getJob() != null && !userDto.getJob().isBlank()) {
+      jobRepository.insert(userId, userDto.getJob());
     }
 
     return result;

@@ -12,7 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collections;
 
-// 全HTTPリクエストに対して、JWTトークンが本物かどうかを検査する
+// 全HTTPリクエストに対して、JWTトークンが本物かどうかを検査するクラス
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
