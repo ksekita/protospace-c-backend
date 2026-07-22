@@ -1,23 +1,19 @@
 package in.techcamp.protospace.controller;
 
-import in.techcamp.protospace.mapper.PrototypeMapper;
+import in.techcamp.protospace.service.PrototypeService;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-// ★ここを最新のパッケージに修正！
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import org.springframework.test.web.servlet.MockMvc;
-
 import org.springframework.mock.web.MockMultipartFile;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import javax.crypto.SecretKey;
-import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -33,50 +29,33 @@ public class PrototypeControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean 
-    private PrototypeMapper prototypeMapper;
+    private PrototypeService prototypeService;
     
     @Test
-    @WithMockUser
+    @WithMockUser(username = "1")
     public void testCreatePrototype() throws Exception {
-        // ==========================================
-        // 1. ダミーの画像ファイルを作成する
-        // ==========================================
+        // ダミーデータの作成
         MockMultipartFile imageFile = new MockMultipartFile(
                 "image",                 
-                "test-image.png",         // 仮のファイル名
-                "image/png",              // ファイルの形式
-                "dummy image data".getBytes() // 仮のデータ
+                "test-image.png",         
+                "image/png",              
+                "dummy image data".getBytes() 
         );
 
-        // ==========================================
-        // 2. テスト用のJWT（トークン）を生成する
-        // ==========================================
-        // Controller側で使っている秘密鍵と全く同じものを使います
-        String secretKeyString = "my-super-secret-key-for-protospace-which-is-very-long";
-        SecretKey key = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
-        
-        // 0.12.7の書き方で、ユーザーID「1」を持つトークンを新しく作ります
-        String testToken = Jwts.builder()
-                .subject("1")
-                .signWith(key)
-                .compact();
 
-        // ==========================================
-        // 3. MockMvcを使って、疑似的にPOSTリクエストを送信！
-        // ==========================================
+        //MockMvcを使って、疑似的にPOSTリクエストを送信する
         mockMvc.perform(multipart("/api/prototypes/")
-                .file(imageFile) // 画像をセット
-                .param("title", "テストタイトル") // テキストをセット
+                .file(imageFile) 
+                .param("title", "テストタイトル") 
                 .param("catchCopy", "テストキャッチコピー")
                 .param("concept", "テストコンセプト")
-                .header("Authorization", "Bearer " + testToken) // JWTをセット
                 .with(csrf())
     )
     
-                // 4. 結果の検証（答え合わせ）
-                .andExpect(status().isOk()) // HTTPステータスが 200 OK であること
-                .andExpect(content().string("プロトタイプの投稿に成功しました！")); // 返ってくる文字が一致すること
+                // 動作確認
+                .andExpect(status().isOk()) 
+                .andExpect(content().string("プロトタイプの投稿に成功しました。")); 
 
-        verify(prototypeMapper).insert(any());
+        verify(prototypeService).createPrototype(any(), eq(1L));
     }
 }
