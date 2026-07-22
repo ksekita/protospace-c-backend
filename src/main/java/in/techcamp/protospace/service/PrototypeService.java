@@ -1,0 +1,53 @@
+package in.techcamp.protospace.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.UUID;
+
+import in.techcamp.protospace.entity.PrototypeEntity;
+import in.techcamp.protospace.form.PrototypeForm;
+import in.techcamp.protospace.mapper.PrototypeMapper;
+import lombok.RequiredArgsConstructor;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class PrototypeService {
+    private final PrototypeMapper prototypeMapper;
+
+    public void createPrototype(PrototypeForm form, Long userId) throws Exception {
+        
+        // 画像の保存処理
+        MultipartFile imageFile = form.getImage();
+        String originalName = imageFile.getOriginalFilename();
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        String savedFileName = UUID.randomUUID().toString() + extension;
+
+        Path uploadPath = Paths.get("uploads/");
+        if (!Files.exists(uploadPath)) {
+            Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(savedFileName);
+        imageFile.transferTo(filePath);
+        // ここまで
+
+        // DB保存
+        PrototypeEntity entity = new PrototypeEntity();
+        entity.setTitle(form.getTitle());
+        entity.setCatchCopy(form.getCatchCopy());
+        entity.setConcept(form.getConcept());
+        entity.setImage(savedFileName);
+        entity.setUserId(userId); 
+
+        prototypeMapper.insert(entity);
+    }
+
+    public List<PrototypeEntity> getAllPrototypes(){
+        return prototypeMapper.findAll();
+    }
+}
+
