@@ -1,6 +1,5 @@
 package in.techcamp.protospace.dto;
 
-import java.util.List;
 import in.techcamp.protospace.validation.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

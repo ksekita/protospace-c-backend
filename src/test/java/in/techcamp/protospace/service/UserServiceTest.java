@@ -14,7 +14,6 @@ import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.repository.JobRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
