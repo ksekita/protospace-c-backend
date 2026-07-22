@@ -52,7 +52,7 @@ public class AuthService {
       List<String> positions = positionRepository.findByUserId(user.getId());
       List<String> jobs = jobRepository.findByUserId(user.getId());
 
-      //トークンやユーザー基本情報などをまとめたDtoを作成し、return
+      //トークンやユーザー基本情報などをまとめたDtoを作成し、返す。
       return new LoginResponseDto(token, user.getId(), user.getEmail(), user.getUsername(), positions, jobs);
     } catch (Exception e) {
       throw new AuthenticationException("メールアドレスまたはパスワードが正しくありません");

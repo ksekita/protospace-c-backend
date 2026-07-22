@@ -1,6 +1,8 @@
 package in.techcamp.protospace.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -10,7 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.techcamp.protospace.dto.LoginRequestDto;
 import in.techcamp.protospace.dto.LoginResponseDto;
 import in.techcamp.protospace.dto.UserDto;
-import in.techcamp.protospace.exception.AuthenticationException; // CustomAuthenticationException に変更している場合はそちらを指定
+import in.techcamp.protospace.exception.AuthenticationException;
 import in.techcamp.protospace.exception.GlobalExceptionHandler;
 import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.service.AuthService;
@@ -22,42 +24,47 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
-// 🌟 SpringBootTestやWebMvcTestを使わず、純粋なMockito拡張を使用します
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
   private MockMvc mockMvc;
   private ObjectMapper objectMapper;
 
-  @Mock
-  private UserService userService;
+  @Mock private UserService userService;
 
-  @Mock
-  private AuthService authService;
+  @Mock private AuthService authService;
 
-  @InjectMocks
-  private UserController userController;
+  @InjectMocks private UserController userController;
+
+  @Captor private ArgumentCaptor<UserDto> userDtoCaptor;
+
+  @Captor private ArgumentCaptor<LoginRequestDto> loginRequestDtoCaptor;
 
   @BeforeEach
   void setUp() {
     objectMapper = new ObjectMapper();
-    // 🌟 autoconfigure に頼らず、手動で MockMvc を構築します
-    // これによりセキュリティフィルターを完全にバイパスしつつ、コントローラーの挙動だけをテストできます
-    mockMvc = MockMvcBuilders.standaloneSetup(userController)
-        .setControllerAdvice(new GlobalExceptionHandler()) // 例外ハンドラーも手動で適用
-        .build();
+
+    LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+    validator.afterPropertiesSet();
+
+    mockMvc =
+        MockMvcBuilders.standaloneSetup(userController)
+            .setControllerAdvice(new GlobalExceptionHandler())
+            .setValidator(validator)
+            .build();
   }
 
-  // -----------------------------------------------------------------
   // ユーザー新規登録のテスト
-  // -----------------------------------------------------------------
   @Nested
   @DisplayName("ユーザー新規登録 API (/api/auth/register)")
   class RegisterTest {
@@ -68,67 +75,59 @@ class UserControllerTest {
       UserDto dto = createValidUserDto();
       when(userService.insertUser(any(UserDto.class))).thenReturn(1);
 
-      mockMvc.perform(post("/api/auth/register")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(dto)))
+      mockMvc
+          .perform(
+              post("/api/auth/register")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(dto)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$").value(1));
+
+      // ArgumentCaptor で Service に渡されたリクエスト引数を検証
+      verify(userService).insertUser(userDtoCaptor.capture());
+      UserDto capturedDto = userDtoCaptor.getValue();
+      assertThat(capturedDto.getEmail()).isEqualTo("test@example.com");
+      assertThat(capturedDto.getUsername()).isEqualTo("テスト太郎");
+      assertThat(capturedDto.getPositions()).containsExactly("リーダー");
     }
 
     @Test
-    @DisplayName("【異常系】メールアドレスの形式が正しくない場合 (422 Unprocessable Entity)")
+    @DisplayName("【異常系】Bean Validationエラー時：メールアドレスの形式が不正 (422 Unprocessable Entity)")
     void register_InvalidEmail_Returns422() throws Exception {
       UserDto dto = createValidUserDto();
       dto.setEmail("invalid-email-format");
 
-      // @Valid によるバリデーションは standaloneSetup の場合、
-      // 厳密なテストには手動の Validator 登録が必要ですが、
-      // Controller側でエラーハンドリングをどう実装しているかによって
-      // ここは 400系(422) が返ることを検証します。
-      // もしここだけテストが通らない場合は、このテストメソッドのみ調整します。
-      mockMvc.perform(post("/api/auth/register")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(dto)))
-          .andExpect(status().isUnprocessableEntity());
+      mockMvc
+          .perform(
+              post("/api/auth/register")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(dto)))
+          .andExpect(status().is(422));
     }
 
     @Test
-    @DisplayName("【異常系】パスワードと確認用パスワードが不一致の場合 (400 Bad Request)")
-    void register_PasswordMismatch_Returns400() throws Exception {
-      UserDto dto = createValidUserDto();
-      dto.setPasswordConfirm("DifferentPassword123!");
+    @DisplayName("【異常系】Service層でバリデーション例外が発生した場合に 400 Bad Request とエラー詳細を返す")
+    void register_ServiceValidationException_Returns400() throws Exception {
 
-      when(userService.insertUser(any(UserDto.class)))
-          .thenThrow(new ValidationException(
-              Map.of("passwordConfirm", List.of("パスワードが一致しません")), "パスワードが一致しません"));
-
-      mockMvc.perform(post("/api/auth/register")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(dto)))
-          .andExpect(status().isBadRequest())
-          .andExpect(jsonPath("$.message").value("パスワードが一致しません"));
-    }
-
-    @Test
-    @DisplayName("【異常系】メールアドレスが既に存在する場合 (400 Bad Request)")
-    void register_DuplicateEmail_Returns400() throws Exception {
       UserDto dto = createValidUserDto();
 
       when(userService.insertUser(any(UserDto.class)))
-          .thenThrow(new ValidationException(
-              Map.of("email", List.of("このメールアドレスは既に登録されています。")), "登録エラー"));
+          .thenThrow(
+              new ValidationException(
+                  Map.of("email", List.of("このメールアドレスは既に登録されています。")), "バリデーションエラー"));
 
-      mockMvc.perform(post("/api/auth/register")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(dto)))
+      mockMvc
+          .perform(
+              post("/api/auth/register")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(dto)))
           .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.message").value("バリデーションエラー"))
           .andExpect(jsonPath("$.errors.email[0]").value("このメールアドレスは既に登録されています。"));
     }
   }
 
-  // -----------------------------------------------------------------
   // ログインのテスト
-  // -----------------------------------------------------------------
   @Nested
   @DisplayName("ログイン API (/api/auth/login)")
   class LoginTest {
@@ -140,24 +139,37 @@ class UserControllerTest {
       request.setEmail("test@example.com");
       request.setPassword("Password123456!");
 
-      LoginResponseDto response = new LoginResponseDto(
-          "dummy.jwt.token", 1L, "test@example.com", "テスト太郎",
-          List.of("マネージャー"), List.of("エンジニア")
-      );
+      LoginResponseDto response =
+          new LoginResponseDto(
+              "dummy.jwt.token",
+              1L,
+              "test@example.com",
+              "テスト太郎",
+              List.of("マネージャー"),
+              List.of("エンジニア"));
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 
-      mockMvc.perform(post("/api/auth/login")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(request)))
+      mockMvc
+          .perform(
+              post("/api/auth/login")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.token").value("dummy.jwt.token"))
+          .andExpect(jsonPath("$.id").value(1L))
           .andExpect(jsonPath("$.username").value("テスト太郎"))
           .andExpect(jsonPath("$.positions[0]").value("マネージャー"));
+
+      // ArgumentCaptor で AuthService に渡されたリクエスト DTO を検証
+      verify(authService).login(loginRequestDtoCaptor.capture());
+      LoginRequestDto capturedRequest = loginRequestDtoCaptor.getValue();
+      assertThat(capturedRequest.getEmail()).isEqualTo("test@example.com");
+      assertThat(capturedRequest.getPassword()).isEqualTo("Password123456!");
     }
 
     @Test
-    @DisplayName("【異常系】パスワードまたはメールアドレスが誤っている場合 (401 Unauthorized)")
+    @DisplayName("【異常系】認証失敗時：AuthenticationExceptionが発生した場合に 401 Unauthorized を返す")
     void login_InvalidCredentials_Returns401() throws Exception {
       LoginRequestDto request = new LoginRequestDto();
       request.setEmail("test@example.com");
@@ -166,9 +178,11 @@ class UserControllerTest {
       when(authService.login(any(LoginRequestDto.class)))
           .thenThrow(new AuthenticationException("メールアドレスまたはパスワードが正しくありません"));
 
-      mockMvc.perform(post("/api/auth/login")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(objectMapper.writeValueAsString(request)))
+      mockMvc
+          .perform(
+              post("/api/auth/login")
+                  .contentType(MediaType.APPLICATION_JSON)
+                  .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isUnauthorized())
           .andExpect(jsonPath("$.message").value("メールアドレスまたはパスワードが正しくありません"));
     }

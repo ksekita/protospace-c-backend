@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     body.put("message", "入力内容に不備があります");
     body.put("errors", errors);
 
-    return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+    return ResponseEntity.status(HttpStatus.valueOf(422)).body(body);
   }
 
   // UserService 内でのビジネスロジックエラー (パスワード不一致・メール重複等)

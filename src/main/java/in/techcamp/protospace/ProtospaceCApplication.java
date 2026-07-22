@@ -20,7 +20,7 @@ public class ProtospaceCApplication {
       // flyway.repair();
       flyway.clean();
 
-      // 2. 修復した状態で、通常通りマイグレーションを実行する
+      // 修復した状態で、通常通りマイグレーションを実行する
       flyway.migrate();
     };
   }
