@@ -2,8 +2,8 @@ package in.techcamp.protospace.entity;
 
 import lombok.Data;
 @Data
-public class JobEntity {
+public class AffiliationEntity {
   private Long id;
   private Long userId;
-  private String name; // 職業名
+  private String name; 
 }

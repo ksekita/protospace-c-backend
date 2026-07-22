@@ -88,7 +88,7 @@ class UserControllerTest {
       UserDto capturedDto = userDtoCaptor.getValue();
       assertThat(capturedDto.getEmail()).isEqualTo("test@example.com");
       assertThat(capturedDto.getPosition()).isEqualTo("リーダー");
-      assertThat(capturedDto.getJob()).isEqualTo("エンジニア");
+      assertThat(capturedDto.getAffiliation()).isEqualTo("エンジニア");
     }
 
     @Test
@@ -145,8 +145,8 @@ class UserControllerTest {
               1L,
               "test@example.com",
               "テスト太郎",
-              List.of("マネージャー"),
-              List.of("エンジニア"));
+             "マネージャー",
+              "エンジニア");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 
@@ -159,7 +159,8 @@ class UserControllerTest {
           .andExpect(jsonPath("$.token").value("dummy.jwt.token"))
           .andExpect(jsonPath("$.id").value(1L))
           .andExpect(jsonPath("$.username").value("テスト太郎"))
-          .andExpect(jsonPath("$.positions[0]").value("マネージャー"));
+          .andExpect(jsonPath("$.position").value("マネージャー"))
+          .andExpect(jsonPath("$.affiliation").value("エンジニア"));
 
       // ArgumentCaptor で AuthService に渡されたリクエスト DTO を検証
       verify(authService).login(loginRequestDtoCaptor.capture());
@@ -195,7 +196,7 @@ class UserControllerTest {
     dto.setPassword("ValidPassword123!");
     dto.setPasswordConfirm("ValidPassword123!");
     dto.setPosition("リーダー");
-    dto.setJob("エンジニア");
+    dto.setAffiliation("エンジニア");
     return dto;
   }
 }

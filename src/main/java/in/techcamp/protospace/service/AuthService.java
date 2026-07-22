@@ -1,6 +1,6 @@
 package in.techcamp.protospace.service;
 
-import java.util.List;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -9,7 +9,7 @@ import in.techcamp.protospace.dto.LoginRequestDto;
 import in.techcamp.protospace.dto.LoginResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.AuthenticationException;
-import in.techcamp.protospace.repository.JobRepository;
+import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import in.techcamp.protospace.security.JwtTokenProvider;
@@ -21,14 +21,14 @@ public class AuthService {
   private final JwtTokenProvider tokenProvider;
   private final UserRepository userRepository;
   private final PositionRepository positionRepository;
-  private final JobRepository jobRepository;
+  private final AffiliationRepository affiliationRepository;
 
-  public AuthService(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, UserRepository userRepository, PositionRepository positionRepository, JobRepository jobRepository) {
+  public AuthService(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider, UserRepository userRepository, PositionRepository positionRepository, AffiliationRepository affiliationRepository) {
     this.authenticationManager = authenticationManager;
     this.tokenProvider = tokenProvider;
     this.userRepository = userRepository;
     this.positionRepository = positionRepository;
-    this.jobRepository = jobRepository;
+    this.affiliationRepository = affiliationRepository;
   }
 
   // ログイン処理
@@ -48,11 +48,11 @@ public class AuthService {
       }
 
       // ログインユーザーの役職と職業を取得
-      List<String> positions = positionRepository.findByUserId(user.getId());
-      List<String> jobs = jobRepository.findByUserId(user.getId());
+      String position = positionRepository.findByUserId(user.getId());
+      String affiliation = affiliationRepository.findByUserId(user.getId());
 
       //トークンやユーザー基本情報などをまとめたDtoを作成し、返す。
-      return new LoginResponseDto(token, user.getId(), user.getEmail(), user.getUsername(), positions, jobs);
+      return new LoginResponseDto(token, user.getId(), user.getEmail(), user.getUsername(), position, affiliation);
     } catch (Exception e) {
       throw new AuthenticationException("メールアドレスまたはパスワードが正しくありません");
     }

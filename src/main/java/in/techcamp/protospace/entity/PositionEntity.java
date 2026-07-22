@@ -3,6 +3,6 @@ import lombok.Data;
 @Data
 public class PositionEntity {
   private Long id;
-  private Long userId; // users テーブルの id
-  private String name; // 役職名
+  private Long userId; 
+  private String name; 
 }

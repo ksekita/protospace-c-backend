@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 import in.techcamp.protospace.dto.UserDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ValidationException;
-import in.techcamp.protospace.repository.JobRepository;
+import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,7 +31,7 @@ class UserServiceTest {
 
   @Mock private UserRepository userRepository;
   @Mock private PositionRepository positionRepository;
-  @Mock private JobRepository jobRepository;
+  @Mock private AffiliationRepository affiliationRepository;
   @Mock private PasswordEncoder passwordEncoder;
 
   @InjectMocks private UserService userService;
@@ -48,7 +48,7 @@ class UserServiceTest {
     validUserDto.setPassword("Password123456!");
     validUserDto.setPasswordConfirm("Password123456!");
     validUserDto.setPosition("リーダー");
-    validUserDto.setJob("エンジニア");
+    validUserDto.setAffiliation("エンジニア");
   }
 
   @Nested
@@ -79,7 +79,7 @@ class UserServiceTest {
 
       // 役職・職業がそれぞれ1回ずつ登録されたか検証
       verify(positionRepository).insert(10L, "リーダー");
-      verify(jobRepository).insert(10L, "エンジニア");
+      verify(affiliationRepository).insert(10L, "エンジニア");
     }
 
     @Test

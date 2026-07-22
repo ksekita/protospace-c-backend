@@ -27,6 +27,6 @@ public class UserDto {
   @NotBlank(message = "役職は必須です")
   private String position;
 
-  @NotBlank(message = "職業は必須です")
-  private String job;
+  @NotBlank(message = "所属は必須です")
+  private String affiliation;
 }

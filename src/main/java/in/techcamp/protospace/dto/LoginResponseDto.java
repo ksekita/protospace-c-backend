@@ -1,6 +1,5 @@
 package in.techcamp.protospace.dto;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -13,6 +12,6 @@ public class LoginResponseDto {
   private Long id;
   private String email;
   private String username;
-  private List<String> positions;
-  private List<String> jobs;
+  private String position;
+  private String affiliation;
 }

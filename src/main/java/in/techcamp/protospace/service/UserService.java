@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import in.techcamp.protospace.dto.UserDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ValidationException;
-import in.techcamp.protospace.repository.JobRepository;
+import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
 
@@ -18,12 +18,12 @@ public class UserService {
   private final PasswordEncoder passwordEncoder;
   private final UserRepository userRepository;
   private final PositionRepository positionRepository;
-  private final JobRepository jobRepository;
+  private final AffiliationRepository affiliationRepository;
 
-  public UserService(UserRepository userRepository, PositionRepository positionRepository, JobRepository jobRepository, PasswordEncoder passwordEncoder) {
+  public UserService(UserRepository userRepository, PositionRepository positionRepository, AffiliationRepository affiliationRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
     this.positionRepository = positionRepository;
-    this.jobRepository = jobRepository;
+    this.affiliationRepository = affiliationRepository;
     this.passwordEncoder = passwordEncoder;
   }
 
@@ -59,9 +59,9 @@ public class UserService {
       positionRepository.insert(userId, userDto.getPosition());
     }
 
-    // 職業(jobs)の登録
-    if (userDto.getJob() != null && !userDto.getJob().isBlank()) {
-      jobRepository.insert(userId, userDto.getJob());
+    // 配属(affiliations)の登録
+    if (userDto.getAffiliation() != null && !userDto.getAffiliation().isBlank()) {
+      affiliationRepository.insert(userId, userDto.getAffiliation());
     }
 
     return result;

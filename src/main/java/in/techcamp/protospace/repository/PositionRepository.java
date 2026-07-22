@@ -1,6 +1,6 @@
 package in.techcamp.protospace.repository;
 
-import java.util.List;
+
 import org.springframework.stereotype.Repository;
 import in.techcamp.protospace.mapper.PositionMapper;
 
@@ -19,7 +19,7 @@ public class PositionRepository {
   }
 
   //検索
-  public List<String> findByUserId(Long userId) {
-    return positionMapper.findByUserId(userId);
-  }
+ public String findByUserId(Long userId) {
+  return positionMapper.findByUserId(userId);
+}
 }
