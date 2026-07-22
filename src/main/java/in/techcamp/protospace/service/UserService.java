@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import in.techcamp.protospace.dto.UserDto;
+import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.repository.AffiliationRepository;
@@ -34,7 +35,7 @@ public class UserService {
 
   // ユーザー新規登録
   @Transactional 
-  public int insertUser(UserDto userDto) {
+  public UserResponseDto insertUser(UserDto userDto) {
     if (!userDto.getPassword().equals(userDto.getPasswordConfirm())) {
       throw new ValidationException(
           Map.of("passwordConfirm", List.of("パスワードが一致しません")), "パスワードが一致しません");
@@ -51,7 +52,7 @@ public class UserService {
     user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
 
     // ユーザー本体の登録（自動採番されたIDが user.getId() にセットされる）
-    int result = userRepository.insertUser(user);
+    userRepository.insertUser(user);
     Long userId = user.getId();
 
     // 役職(positions)の登録
@@ -64,6 +65,12 @@ public class UserService {
       affiliationRepository.insert(userId, userDto.getAffiliation());
     }
 
-    return result;
+    return new UserResponseDto(
+        userId,
+        user.getUsername(),
+        user.getEmail(),
+        userDto.getPosition(),
+        userDto.getAffiliation()
+    );
   }
 }
