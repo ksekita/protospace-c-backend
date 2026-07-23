@@ -1,6 +1,7 @@
 package in.techcamp.protospace.controller;
 
 import in.techcamp.protospace.service.PrototypeService;
+import in.techcamp.protospace.security.JwtTokenProvider; // 🌟 追加
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,40 +19,41 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import org.springframework.security.test.context.support.WithMockUser;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc 
 public class PrototypeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider; 
+
     @MockitoBean 
     private PrototypeService prototypeService;
     
     @Test
-    @WithMockUser(username = "1")
     public void testCreatePrototype() throws Exception {
         // ダミーデータの作成
         MockMultipartFile imageFile = new MockMultipartFile(
-                "image",                 
+                "image",                  
                 "test-image.png",         
                 "image/png",              
                 "dummy image data".getBytes() 
         );
 
+        // テスト用の「本物のJWTトークン」を生成（ユーザーID: "1" をセット）
+        String token = jwtTokenProvider.generateToken("1");
 
-        //MockMvcを使って、疑似的にPOSTリクエストを送信する
+        // MockMvcを使って、疑似的にPOSTリクエストを送信する
         mockMvc.perform(multipart("/api/prototypes/")
                 .file(imageFile) 
                 .param("title", "テストタイトル") 
                 .param("catchCopy", "テストキャッチコピー")
                 .param("concept", "テストコンセプト")
-                .with(csrf())
-    )
-    
+                .header("Authorization", "Bearer " + token) 
+        )
                 // 動作確認
                 .andExpect(status().isOk()) 
                 .andExpect(content().string("プロトタイプの投稿に成功しました。")); 
