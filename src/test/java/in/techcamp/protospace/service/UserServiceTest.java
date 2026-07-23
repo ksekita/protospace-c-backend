@@ -36,7 +36,7 @@ class UserServiceTest {
   @Mock private PositionRepository positionRepository;
   @Mock private AffiliationRepository affiliationRepository;
   @Mock private PasswordEncoder passwordEncoder;
-  @Mock private JwtTokenProvider jwtTokenProvider; // 🌟 JwtTokenProviderのモックを追加
+  @Mock private JwtTokenProvider jwtTokenProvider; 
 
   @InjectMocks private UserService userService;
 
