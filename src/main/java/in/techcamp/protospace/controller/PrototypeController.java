@@ -19,7 +19,7 @@ public class PrototypeController {
     this.prototypeService = prototypeService;
   }
 
-// 記事詳細ページに遷移
+// プロトタイプ詳細データの取得
   @GetMapping("/{id}")
   public ResponseEntity<PrototypeDetailResponseDto> getPrototypeDetail(
       @PathVariable("id") Long id) {

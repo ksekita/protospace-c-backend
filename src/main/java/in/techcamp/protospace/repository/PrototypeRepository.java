@@ -13,6 +13,7 @@ public class PrototypeRepository {
     this.prototypeMapper = prototypeMapper;
   }
 
+  // idを使用して検索
   public PrototypeEntity findById(Long id) {
     return prototypeMapper.findById(id);
   }

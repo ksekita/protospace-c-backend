@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface PrototypeMapper {
-
+  // idを使用して検索
   @Select(
       "SELECT id, title, catch_copy AS catchCopy, concept, image, user_id AS userId FROM"
           + " prototypes WHERE id = #{id}")

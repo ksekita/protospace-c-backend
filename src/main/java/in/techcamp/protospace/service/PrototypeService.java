@@ -20,6 +20,7 @@ public class PrototypeService {
     this.userRepository = userRepository;
   }
 
+  // 記事詳細を取得
   public PrototypeDetailResponseDto getPrototypeDetail(Long id) {
     PrototypeEntity prototype = prototypeRepository.findById(id);
     if (prototype == null) {
