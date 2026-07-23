@@ -34,12 +34,17 @@ public class AuthService {
   // ログイン処理
   public LoginResponseDto login(LoginRequestDto request) {
 
+    Authentication authentication;
     try {
       // パスワードの照合・認証の実行
-      Authentication authentication = authenticationManager.authenticate(
+       authentication = authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+      }
+      catch (org.springframework.security.core.AuthenticationException e) {
+      // ユーザー側のエラー
+      throw new AuthenticationException("メールアドレスまたはパスワードが正しくありません");
+    }
 
-      // JWTトークンの生成
       String token = tokenProvider.generateToken(authentication);
       UserEntity user = userRepository.selectByEmail(request.getEmail());
 
@@ -53,9 +58,7 @@ public class AuthService {
 
       //トークンやユーザー基本情報などをまとめたDtoを作成し、返す。
       return new LoginResponseDto(token, user.getId(), user.getEmail(), user.getUsername(), position, affiliation);
-    } catch (Exception e) {
-      throw new AuthenticationException("メールアドレスまたはパスワードが正しくありません");
-    }
+   
   }
 
 }

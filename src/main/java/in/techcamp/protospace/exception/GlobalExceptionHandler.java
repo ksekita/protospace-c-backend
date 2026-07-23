@@ -1,13 +1,14 @@
 package in.techcamp.protospace.exception;
-
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -39,6 +40,15 @@ public class GlobalExceptionHandler {
   // ログイン認証失敗エラー
   @ExceptionHandler(AuthenticationException.class)
   public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(Map.of("message", ex.getMessage()));
+  }
+
+  //サーバー側のエラー
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<Map<String, String>> handleUnexpectedException(Exception ex) {
+    log.error("【サーバーエラー】予期せぬ例外が発生しました", ex);
+    return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .body(Map.of("message", "サーバー内部で予期せぬエラーが発生しました"));
   }
 }
