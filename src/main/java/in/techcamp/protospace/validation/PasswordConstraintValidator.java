@@ -32,9 +32,20 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
   private DictionaryRule dictionaryRule;
 
+  private  PasswordValidator validator;
+
   // validatorの初期化処理
   @Override
   public void initialize(ValidPassword constraintAnnotation) {
+
+    List<Rule> rules = new ArrayList<>();
+    rules.add(new LengthRule(12, 64)); //12文字以上64文字以内
+    rules.add(new WhitespaceRule());//スペース禁止
+    rules.add(new RepeatCharacterRegexRule(3));//同じ文字の連続(3回以上)禁止
+
+    if (this.dictionaryRule != null) {
+      rules.add(this.dictionaryRule);
+    }
 
     try (
       // 危険なパスワード一覧を読み込む
@@ -62,6 +73,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
       log.error("【エラー】パスワード自作リストの読み込み中に予期せぬエラーが発生しました。", e);
       this.dictionaryRule = null;
     }
+    this.validator=new PasswordValidator(rules);
   }
 
   // 検証処理
@@ -69,17 +81,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
   public boolean isValid(String password, ConstraintValidatorContext context) {
     if (password == null) return false;
 
-    List<Rule> rules = new ArrayList<>();
-    rules.add(new LengthRule(12, 64)); //12文字以上64文字以内
-    rules.add(new WhitespaceRule());//スペース禁止
-    rules.add(new RepeatCharacterRegexRule(3));//同じ文字の連続(3回以上)禁止
-
-    if (this.dictionaryRule != null) {
-      rules.add(this.dictionaryRule);
-    }
-
-    PasswordValidator validator = new PasswordValidator(rules.toArray(Rule[]::new));
-    RuleResult result = validator.validate(new PasswordData(password));
+    RuleResult result = this.validator.validate(new PasswordData(password));
 
     if (result.isValid()) return true;
 
