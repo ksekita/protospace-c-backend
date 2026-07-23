@@ -1,7 +1,7 @@
 package in.techcamp.protospace.controller;
 
 import in.techcamp.protospace.service.PrototypeService;
-import in.techcamp.protospace.security.JwtTokenProvider; // 🌟 追加
+import in.techcamp.protospace.security.JwtTokenProvider; 
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
