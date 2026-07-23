@@ -4,5 +4,5 @@ import lombok.Data;
 public class PositionEntity {
   private Long id;
   private Long userId; 
-  private String name; 
+  private String position; 
 }

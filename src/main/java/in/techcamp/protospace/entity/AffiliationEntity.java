@@ -5,5 +5,5 @@ import lombok.Data;
 public class AffiliationEntity {
   private Long id;
   private Long userId;
-  private String name; 
+  private String affiliation; 
 }
