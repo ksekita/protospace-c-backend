@@ -25,7 +25,7 @@ public class PrototypeService {
         String extension = originalName.substring(originalName.lastIndexOf("."));
         String savedFileName = UUID.randomUUID().toString() + extension;
 
-        Path uploadPath = Paths.get("src/main/resources/static/uploads/");
+        Path uploadPath = Paths.get("/uploads/");
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
