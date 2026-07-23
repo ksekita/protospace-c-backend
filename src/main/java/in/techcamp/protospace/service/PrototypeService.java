@@ -21,11 +21,17 @@ public class PrototypeService {
         
         // 画像の保存処理
         MultipartFile imageFile = form.getImage();
-        String originalName = imageFile.getOriginalFilename();
-        String extension = originalName.substring(originalName.lastIndexOf("."));
-        String savedFileName = UUID.randomUUID().toString() + extension;
+        String savedFileName = null;
 
-        Path uploadPath = Paths.get("/uploads/");
+        if(imageFile != null && !imageFile.isEmpty()){
+        
+        String originalName = imageFile.getOriginalFilename();
+
+            if(originalName != null && originalName.contains(".")){
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        savedFileName = UUID.randomUUID().toString() + extension;
+
+        Path uploadPath = Paths.get("uploads/").toAbsolutePath().normalize();
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -33,6 +39,10 @@ public class PrototypeService {
         Path filePath = uploadPath.resolve(savedFileName);
         imageFile.transferTo(filePath);
         // ここまで
+            }
+        } else{
+                throw new IllegalArgumentException("画像ファイルが選択されていません");
+            }
 
         // DB保存
         PrototypeEntity entity = new PrototypeEntity();
@@ -45,4 +55,5 @@ public class PrototypeService {
         prototypeMapper.insert(entity);
     }
 }
+
 
