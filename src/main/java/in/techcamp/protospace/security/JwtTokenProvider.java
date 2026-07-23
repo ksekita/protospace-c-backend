@@ -3,10 +3,11 @@ package in.techcamp.protospace.security;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -23,12 +24,12 @@ public class JwtTokenProvider {
   }
 
   //JWTトークンの生成
-  public String generateToken(Authentication authentication) {
+  public String generateToken(String userId) {
     Date now = new Date();
     Date expiryDate = new Date(now.getTime() + expiration);
 
     return Jwts.builder()
-        .subject(authentication.getName())
+        .subject(userId)
         .issuedAt(now)
         .expiration(expiryDate)
         .signWith(key)
@@ -36,7 +37,7 @@ public class JwtTokenProvider {
   }
 
   //秘密鍵を使ってトークンからメールアドレスを取り出す
-  public String getEmailFromToken(String token) {
+  public String getUserIdFromToken(String token) {
     return Jwts.parser()
         .verifyWith(key)
         .build()

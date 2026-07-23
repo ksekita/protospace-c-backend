@@ -1,6 +1,7 @@
 package in.techcamp.protospace.controller;
 
 import in.techcamp.protospace.service.PrototypeService;
+import in.techcamp.protospace.security.JwtTokenProvider; // 🌟 追加
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -21,11 +21,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters = false) //  JWTなどのセキュリティフィルターを無効化（403回避）
+@AutoConfigureMockMvc 
 public class PrototypeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider; 
 
     @MockitoBean 
     private PrototypeService prototypeService;
@@ -40,18 +43,16 @@ public class PrototypeControllerTest {
                 "dummy image data".getBytes() 
         );
 
-        //  Controllerの引数 `Authentication authentication` に渡すためのダミー認証情報（ユーザーID: 1）を作成
-        UsernamePasswordAuthenticationToken principal = 
-                new UsernamePasswordAuthenticationToken("1", null);
+        // テスト用の「本物のJWTトークン」を生成（ユーザーID: "1" をセット）
+        String token = jwtTokenProvider.generateToken("1");
 
         // MockMvcを使って、疑似的にPOSTリクエストを送信する
-        // ※ Controllerの @PostMapping("/") に合わせるため末尾は "/"
         mockMvc.perform(multipart("/api/prototypes/")
                 .file(imageFile) 
                 .param("title", "テストタイトル") 
                 .param("catchCopy", "テストキャッチコピー")
                 .param("concept", "テストコンセプト")
-                .principal(principal) //  ここでダミーの認証情報を直接リクエストに注入（500回避）
+                .header("Authorization", "Bearer " + token) 
         )
                 // 動作確認
                 .andExpect(status().isOk()) 

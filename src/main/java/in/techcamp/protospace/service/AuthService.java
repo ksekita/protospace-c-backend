@@ -3,7 +3,6 @@ package in.techcamp.protospace.service;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import in.techcamp.protospace.dto.LoginRequestDto;
 import in.techcamp.protospace.dto.LoginResponseDto;
@@ -33,11 +32,9 @@ public class AuthService {
 
   // ログイン処理
   public LoginResponseDto login(LoginRequestDto request) {
-
-    Authentication authentication;
     try {
       // パスワードの照合・認証の実行
-       authentication = authenticationManager.authenticate(
+       authenticationManager.authenticate(
           new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
       }
       catch (org.springframework.security.core.AuthenticationException e) {
@@ -45,14 +42,13 @@ public class AuthService {
       throw new AuthenticationException("メールアドレスまたはパスワードが正しくありません");
     }
 
-      String token = tokenProvider.generateToken(authentication);
-      UserEntity user = userRepository.selectByEmail(request.getEmail());
-
-      if (user == null) {
-        throw new AuthenticationException("ユーザー情報が取得できません");
-      }
+    UserEntity user = userRepository.selectByEmail(request.getEmail());
+    if (user == null) {
+      throw new AuthenticationException("ユーザー情報が取得できません");
+    }
 
       // ログインユーザーの役職と職業を取得
+      String token = tokenProvider.generateToken(String.valueOf(user.getId()));
       String position = positionRepository.findByUserId(user.getId());
       String affiliation = affiliationRepository.findByUserId(user.getId());
 

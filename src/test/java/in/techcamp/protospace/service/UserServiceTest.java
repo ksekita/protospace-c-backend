@@ -26,7 +26,6 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -71,7 +70,7 @@ class UserServiceTest {
                 entity.setId(10L);
                 return 1;
               });
-      when(jwtTokenProvider.generateToken(any(Authentication.class))).thenReturn("mock-jwt-token"); // 🌟 トークン生成のモック
+      when(jwtTokenProvider.generateToken(anyString())).thenReturn("mock-jwt-token");
 
       // 処理の呼び出しと結果の検証
       UserResponseDto response = userService.insertUser(validUserDto);

@@ -35,9 +35,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
       // トークンが改ざんされておらず、有効期限内であるかチェック
       if (tokenProvider.validateToken(token)) {
-        String email = tokenProvider.getEmailFromToken(token);
+        String userId = tokenProvider.getUserIdFromToken(token);
         UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+            new UsernamePasswordAuthenticationToken(userId, null, Collections.emptyList());
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
     }
