@@ -9,11 +9,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import in.techcamp.protospace.dto.UserDto;
+import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
+import in.techcamp.protospace.security.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +26,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +36,7 @@ class UserServiceTest {
   @Mock private PositionRepository positionRepository;
   @Mock private AffiliationRepository affiliationRepository;
   @Mock private PasswordEncoder passwordEncoder;
+  @Mock private JwtTokenProvider jwtTokenProvider; // 🌟 JwtTokenProviderのモックを追加
 
   @InjectMocks private UserService userService;
 
@@ -56,7 +60,7 @@ class UserServiceTest {
   class InsertUserTest {
 
     @Test
-    @DisplayName("【正常系】ユーザー基本情報およびハッシュ化されたパスワード、複数役職・職業が正しく登録されること")
+    @DisplayName("【正常系】ユーザー基本情報およびハッシュ化されたパスワード、役職・配属が正しく登録され、UserResponseDtoが返却されること")
     void insertUser_Success() {
       when(userRepository.existsByEmail(anyString())).thenReturn(false);
       when(passwordEncoder.encode("Password123456!")).thenReturn("hashedPassword123");
@@ -67,8 +71,18 @@ class UserServiceTest {
                 entity.setId(10L);
                 return 1;
               });
+      when(jwtTokenProvider.generateToken(any(Authentication.class))).thenReturn("mock-jwt-token"); // 🌟 トークン生成のモック
 
-      userService.insertUser(validUserDto);
+      // 処理の呼び出しと結果の検証
+      UserResponseDto response = userService.insertUser(validUserDto);
+
+      assertThat(response).isNotNull();
+      assertThat(response.getToken()).isEqualTo("mock-jwt-token");
+      assertThat(response.getId()).isEqualTo(10L);
+      assertThat(response.getUsername()).isEqualTo("テストユーザー");
+      assertThat(response.getEmail()).isEqualTo("test@example.com");
+      assertThat(response.getPosition()).isEqualTo("リーダー");
+      assertThat(response.getAffiliation()).isEqualTo("エンジニア");
 
       // ArgumentCaptor で Entity に詰め替えられた値とパスワードハッシュ化を正確に検証
       verify(userRepository).insertUser(userEntityCaptor.capture());

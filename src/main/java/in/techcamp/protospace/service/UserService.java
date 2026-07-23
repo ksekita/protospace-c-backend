@@ -1,7 +1,10 @@
 package in.techcamp.protospace.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,6 +15,7 @@ import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
+import in.techcamp.protospace.security.JwtTokenProvider;
 
 @Service
 public class UserService {
@@ -20,12 +24,14 @@ public class UserService {
   private final UserRepository userRepository;
   private final PositionRepository positionRepository;
   private final AffiliationRepository affiliationRepository;
+  private final JwtTokenProvider jwtTokenProvider;
 
-  public UserService(UserRepository userRepository, PositionRepository positionRepository, AffiliationRepository affiliationRepository, PasswordEncoder passwordEncoder) {
+  public UserService(UserRepository userRepository, PositionRepository positionRepository, AffiliationRepository affiliationRepository, PasswordEncoder passwordEncoder,JwtTokenProvider jwtTokenProvider) {
     this.userRepository = userRepository;
     this.positionRepository = positionRepository;
     this.affiliationRepository = affiliationRepository;
     this.passwordEncoder = passwordEncoder;
+    this.jwtTokenProvider = jwtTokenProvider;
   }
 
   // ユーザー情報の取得
@@ -65,7 +71,13 @@ public class UserService {
       affiliationRepository.insert(userId, userDto.getAffiliation());
     }
 
+    Authentication authentication =
+        new UsernamePasswordAuthenticationToken(user.getEmail(), null, Collections.emptyList());
+
+    String token = jwtTokenProvider.generateToken(authentication);
+
     return new UserResponseDto(
+        token,
         userId,
         user.getUsername(),
         user.getEmail(),

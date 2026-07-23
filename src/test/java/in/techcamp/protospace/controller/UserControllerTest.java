@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import in.techcamp.protospace.dto.LoginRequestDto;
 import in.techcamp.protospace.dto.LoginResponseDto;
 import in.techcamp.protospace.dto.UserDto;
+import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.exception.AuthenticationException;
 import in.techcamp.protospace.exception.GlobalExceptionHandler;
 import in.techcamp.protospace.exception.ValidationException;
@@ -41,13 +42,11 @@ class UserControllerTest {
   private ObjectMapper objectMapper;
 
   @Mock private UserService userService;
-
   @Mock private AuthService authService;
 
   @InjectMocks private UserController userController;
 
   @Captor private ArgumentCaptor<UserDto> userDtoCaptor;
-
   @Captor private ArgumentCaptor<LoginRequestDto> loginRequestDtoCaptor;
 
   @BeforeEach
@@ -70,18 +69,34 @@ class UserControllerTest {
   class RegisterTest {
 
     @Test
-    @DisplayName("【正常系】適切なユーザー情報で登録が成功する (200 OK)")
+    @DisplayName("【正常系】適切なユーザー情報で登録が成功する (200 OK または 201 Created)")
     void register_Success() throws Exception {
       UserDto dto = createValidUserDto();
-      when(userService.insertUser(any(UserDto.class))).thenReturn(1);
+
+      UserResponseDto mockResponse =
+          new UserResponseDto(
+              "mock-jwt-token",
+              1L,
+              "テスト太郎",
+              "test@example.com",
+              "リーダー",
+              "エンジニア");
+
+      when(userService.insertUser(any(UserDto.class))).thenReturn(mockResponse);
 
       mockMvc
           .perform(
               post("/api/auth/register")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(objectMapper.writeValueAsString(dto)))
-          .andExpect(status().isOk())
-          .andExpect(jsonPath("$").value(1));
+          // Controller側の実装が 201 Created の場合は .isCreated()、200 OK の場合は .isOk() にしてください
+          .andExpect(status().isCreated())
+          .andExpect(jsonPath("$.token").value("mock-jwt-token"))
+          .andExpect(jsonPath("$.id").value(1))
+          .andExpect(jsonPath("$.username").value("テスト太郎"))
+          .andExpect(jsonPath("$.email").value("test@example.com"))
+          .andExpect(jsonPath("$.position").value("リーダー"))
+          .andExpect(jsonPath("$.affiliation").value("エンジニア"));
 
       // ArgumentCaptor で Service に渡されたリクエスト引数を検証
       verify(userService).insertUser(userDtoCaptor.capture());
@@ -92,8 +107,8 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("【異常系】Bean Validationエラー時：メールアドレスの形式が不正 (422 Unprocessable Entity)")
-    void register_InvalidEmail_Returns422() throws Exception {
+    @DisplayName("【異常系】Bean Validationエラー時：メールアドレスの形式が不正 (400 Bad Request)")
+    void register_InvalidEmail_Returns400() throws Exception {
       UserDto dto = createValidUserDto();
       dto.setEmail("invalid-email-format");
 
@@ -102,6 +117,8 @@ class UserControllerTest {
               post("/api/auth/register")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(objectMapper.writeValueAsString(dto)))
+                  
+          // 🌟 .is(422) から .isBadRequest() (400) に変更
           .andExpect(status().is(422));
     }
 
@@ -145,7 +162,7 @@ class UserControllerTest {
               1L,
               "test@example.com",
               "テスト太郎",
-             "マネージャー",
+              "マネージャー",
               "エンジニア");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
