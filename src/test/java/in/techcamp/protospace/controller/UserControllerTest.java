@@ -107,7 +107,7 @@ class UserControllerTest {
     }
 
     @Test
-    @DisplayName("【異常系】Bean Validationエラー時：メールアドレスの形式が不正 (400 Bad Request)")
+    @DisplayName("【異常系】Bean Validationエラー時：メールアドレスの形式が不正 (422 Unprocessable Entity)")
     void register_InvalidEmail_Returns400() throws Exception {
       UserDto dto = createValidUserDto();
       dto.setEmail("invalid-email-format");
