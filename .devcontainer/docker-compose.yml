@@ -3,7 +3,7 @@ volumes:
 
 services:
   app:
-    # container_name: protospace-backend
+    container_name: protospace-c-backend-devcontainer-app-1
     build: 
       context: .
       dockerfile: Dockerfile
