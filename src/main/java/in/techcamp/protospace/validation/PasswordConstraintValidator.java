@@ -43,9 +43,6 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     rules.add(new WhitespaceRule());//スペース禁止
     rules.add(new RepeatCharacterRegexRule(3));//同じ文字の連続(3回以上)禁止
 
-    if (this.dictionaryRule != null) {
-      rules.add(this.dictionaryRule);
-    }
 
     try (
       // 危険なパスワード一覧を読み込む
@@ -72,6 +69,9 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     } catch (IOException e) {
       log.error("【エラー】パスワード自作リストの読み込み中に予期せぬエラーが発生しました。", e);
       this.dictionaryRule = null;
+    }
+    if (this.dictionaryRule != null) {
+      rules.add(this.dictionaryRule);
     }
     this.validator=new PasswordValidator(rules);
   }
