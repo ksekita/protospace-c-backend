@@ -117,8 +117,7 @@ class UserControllerTest {
               post("/api/auth/register")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(objectMapper.writeValueAsString(dto)))
-                  
-          // 🌟 .is(422) から .isBadRequest() (400) に変更
+                
           .andExpect(status().is(422));
     }
 

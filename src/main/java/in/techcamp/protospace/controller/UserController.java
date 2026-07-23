@@ -26,6 +26,7 @@ public class UserController {
     this.authService = authService;
   }
 
+  //新規登録
   @PostMapping("/register") 
   public ResponseEntity<UserResponseDto> register(@RequestBody @Valid UserDto userDto) {
     UserResponseDto response = userService.insertUser(userDto);
