@@ -9,10 +9,10 @@ import in.techcamp.protospace.mapper.PrototypeMapper;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import java.nio.file.Files;
-import java.nio.file.Path; // 🌟 修正: java.nio.file.Path に変更
+import java.nio.file.Path; 
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID; // 🌟 修正: java.util.UUID に変更
+import java.util.UUID; 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
