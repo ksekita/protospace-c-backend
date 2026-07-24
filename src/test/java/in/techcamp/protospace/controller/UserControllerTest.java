@@ -74,13 +74,7 @@ class UserControllerTest {
       UserDto dto = createValidUserDto();
 
       UserResponseDto mockResponse =
-          new UserResponseDto(
-              "mock-jwt-token",
-              1L,
-              "テスト太郎",
-              "test@example.com",
-              "リーダー",
-              "エンジニア");
+          new UserResponseDto("mock-jwt-token", 1L, "テスト太郎", "test@example.com", "リーダー", "エンジニア");
 
       when(userService.insertUser(any(UserDto.class))).thenReturn(mockResponse);
 
@@ -117,7 +111,6 @@ class UserControllerTest {
               post("/api/auth/register")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(objectMapper.writeValueAsString(dto)))
-                
           .andExpect(status().is(422));
     }
 
@@ -157,12 +150,7 @@ class UserControllerTest {
 
       LoginResponseDto response =
           new LoginResponseDto(
-              "dummy.jwt.token",
-              1L,
-              "test@example.com",
-              "テスト太郎",
-              "マネージャー",
-              "エンジニア");
+              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 

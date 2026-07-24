@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-//ユーザーの新規登録の際にフロントエンドから送られてくるJSONデータを受け取る
+// ユーザーの新規登録の際にフロントエンドから送られてくるJSONデータを受け取る
 @Data
 public class UserDto {
   @NotBlank(message = "ユーザー名は必須です")
