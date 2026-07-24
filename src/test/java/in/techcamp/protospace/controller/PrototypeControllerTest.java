@@ -2,9 +2,10 @@ package in.techcamp.protospace.controller;
 
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.factory.PrototypeFactory;
+import in.techcamp.protospace.security.JwtTokenProvider;
 import in.techcamp.protospace.service.PrototypeService;
-import lombok.With;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,11 +38,20 @@ public class PrototypeControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider; 
+
     @MockitoBean 
     private PrototypeService prototypeService;
+
+    private String token;
+
+    @BeforeEach
+    void setUp() {
+        token = jwtTokenProvider.generateToken("1");
+    }
     
     @Test
-    @WithMockUser(username = "1")
     public void testCreatePrototype() throws Exception {
         // ダミーデータの作成
         MockMultipartFile imageFile = new MockMultipartFile(
@@ -51,13 +61,13 @@ public class PrototypeControllerTest {
                 "dummy image data".getBytes() 
         );
 
-
         //MockMvcを使って、疑似的にPOSTリクエストを送信する
         mockMvc.perform(multipart("/api/prototypes/")
                 .file(imageFile) 
                 .param("title", "テストタイトル") 
                 .param("catchCopy", "テストキャッチコピー")
                 .param("concept", "テストコンセプト")
+                .header("Authorization", "Bearer " + token)
                 .with(csrf())
     )
     
@@ -78,7 +88,9 @@ public class PrototypeControllerTest {
         // モック
         when(prototypeService.getAllPrototypes()).thenReturn(mockList);
 
-        mockMvc.perform(get("/api/prototypes/"))
+        mockMvc.perform(get("/api/prototypes/")
+        .header("Authorization", "Bearer " + token)
+)
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(100))
         .andExpect(jsonPath("$[0].title").value("テストタイトル1"))
