@@ -5,6 +5,8 @@ import in.techcamp.protospace.dto.CommentResponseDto;
 import in.techcamp.protospace.service.CommentService;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +30,7 @@ public class CommentController {
 
   // 新規コメントの投稿
   @PostMapping
-  public ResponseEntity<String> createComment(
+  public ResponseEntity<Map<String, String>> createComment(
       @PathVariable("prototypeId") Long prototypeId,
       @RequestBody @Valid CommentRequestDto request,
       Authentication authentication) {
@@ -36,6 +38,6 @@ public class CommentController {
     Long userId = Long.valueOf(authentication.getName());
     commentService.createComment(prototypeId, userId, request);
 
-    return ResponseEntity.status(HttpStatus.CREATED).body("コメントを投稿しました。");
+   return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "コメントを投稿しました。"));
   }
 }
