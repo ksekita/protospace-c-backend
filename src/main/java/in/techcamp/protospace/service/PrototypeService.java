@@ -7,7 +7,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
+import in.techcamp.protospace.entity.UserEntity;
+import in.techcamp.protospace.repository.PrototypeRepository;
+import in.techcamp.protospace.repository.UserRepository;
+import in.techcamp.protospace.exception.ResourceNotFoundException;
 import in.techcamp.protospace.form.PrototypeForm;
 import in.techcamp.protospace.mapper.PrototypeMapper;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +22,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PrototypeService {
     private final PrototypeMapper prototypeMapper;
+
+
+  private final PrototypeRepository prototypeRepository;
+  private final UserRepository userRepository;
+
+         // 記事詳細を取得
+  public PrototypeDetailResponseDto getPrototypeDetail(Long id) {
+    PrototypeEntity prototype = prototypeRepository.findById(id);
+    if (prototype == null) {
+      throw new ResourceNotFoundException("プロトタイプが見つかりません");
+    }
+
+    UserEntity user = userRepository.selectById(prototype.getUserId());
+    String userName = (user != null) ? user.getUsername() : null;
+
+    return new PrototypeDetailResponseDto(
+        prototype.getId(),
+        prototype.getTitle(),
+        prototype.getCatchCopy(),
+        prototype.getConcept(),
+        prototype.getImage(),
+        prototype.getUserId(),
+        userName);
+  }
 
      public void createPrototype(PrototypeForm form, Long userId) throws Exception {
         
