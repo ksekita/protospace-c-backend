@@ -1,34 +1,34 @@
 package in.techcamp.protospace.repository;
 
-import org.springframework.stereotype.Repository;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.mapper.UserMapper;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class UserRepository {
   private final UserMapper userMapper;
 
-  //コンストラクタ
+  // コンストラクタ
   public UserRepository(UserMapper userMapper) {
     this.userMapper = userMapper;
   }
 
-  //検索
+  // 検索
   public UserEntity selectById(Long id) {
     return userMapper.selectById(id);
   }
 
-  //既存のメアドがあるか検索
-  public boolean existsByEmail(String email){
+  // 既存のメアドがあるか検索
+  public boolean existsByEmail(String email) {
     return userMapper.existsByEmail(email);
   }
 
-  //メアド検索
-  public UserEntity selectByEmail(String email){
+  // メアド検索
+  public UserEntity selectByEmail(String email) {
     return userMapper.selectByEmail(email);
   }
 
-  //保存
+  // 保存
   public int insertUser(UserEntity user) {
     return userMapper.insert(user);
   }
