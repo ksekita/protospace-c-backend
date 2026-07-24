@@ -39,7 +39,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
   public void initialize(ValidPassword constraintAnnotation) {
 
     List<Rule> rules = new ArrayList<>();
-    rules.add(new LengthRule(12, 64)); //12文字以上64文字以内
+    rules.add(new LengthRule(6, 64)); //6文字以上64文字以内
     rules.add(new WhitespaceRule());//スペース禁止
     rules.add(new RepeatCharacterRegexRule(3));//同じ文字の連続(3回以上)禁止
 
@@ -90,7 +90,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
 
     for (RuleResultDetail detail : result.getDetails()) {
       switch (detail.getErrorCode()) {
-        case "TOO_SHORT" -> errorMessages.add("パスワードは12文字以上で入力してください");
+        case "TOO_SHORT" -> errorMessages.add("パスワードは6文字以上で入力してください");
         case "ILLEGAL_WORD" -> errorMessages.add("簡単すぎる、またはよく使われるパスワードは指定できません");
         case "ILLEGAL_REPEATED_CHARS" -> errorMessages.add("同じ文字を連続して使用することはできません");
         case "ILLEGAL_WHITESPACE" -> errorMessages.add("パスワードに空白文字を含めることはできません");
