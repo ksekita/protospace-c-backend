@@ -55,36 +55,35 @@ public class PrototypeService {
     MultipartFile imageFile = form.getImage();
     String savedFileName = null;
 
-    if(imageFile != null && !imageFile.isEmpty()){
-        
-    String originalName = imageFile.getOriginalFilename();
+    if (imageFile != null && !imageFile.isEmpty()) {
 
-    if(originalName != null && originalName.contains(".")){
-    String extension = originalName.substring(originalName.lastIndexOf("."));
-    savedFileName = UUID.randomUUID().toString() + extension;
+      String originalName = imageFile.getOriginalFilename();
 
-    Path uploadPath = Paths.get("uploads/").toAbsolutePath().normalize();
-    if (!Files.exists(uploadPath)) {
-        Files.createDirectories(uploadPath);
+      if (originalName != null && originalName.contains(".")) {
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        savedFileName = UUID.randomUUID().toString() + extension;
+
+        Path uploadPath = Paths.get("uploads/").toAbsolutePath().normalize();
+        if (!Files.exists(uploadPath)) {
+          Files.createDirectories(uploadPath);
         }
 
-    Path filePath = uploadPath.resolve(savedFileName);
-    imageFile.transferTo(filePath);
-    // ここまで
-         }
-      } else{
-                throw new IllegalArgumentException("画像ファイルが選択されていません");
-            }
-
-        // DB保存
-        PrototypeEntity entity = new PrototypeEntity();
-        entity.setTitle(form.getTitle());
-        entity.setCatchCopy(form.getCatchCopy());
-        entity.setConcept(form.getConcept());
-        entity.setImage(savedFileName);
-        entity.setUserId(userId); 
-
-        prototypeMapper.insert(entity);
+        Path filePath = uploadPath.resolve(savedFileName);
+        imageFile.transferTo(filePath);
+        // ここまで
+      }
+    } else {
+      throw new IllegalArgumentException("画像ファイルが選択されていません");
     }
-}
 
+    // DB保存
+    PrototypeEntity entity = new PrototypeEntity();
+    entity.setTitle(form.getTitle());
+    entity.setCatchCopy(form.getCatchCopy());
+    entity.setConcept(form.getConcept());
+    entity.setImage(savedFileName);
+    entity.setUserId(userId);
+
+    prototypeMapper.insert(entity);
+  }
+}

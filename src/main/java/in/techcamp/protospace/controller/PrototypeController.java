@@ -38,18 +38,18 @@ public class PrototypeController {
         Authentication authentication
     ){
     try {
-        Long userId = Long.valueOf(authentication.getName());
+      Long userId = Long.valueOf(authentication.getName());
 
-        prototypeService.createPrototype(form, userId);
+      prototypeService.createPrototype(form, userId);
 
-        return ResponseEntity.ok("プロトタイプの投稿に成功しました。");
+      return ResponseEntity.ok("プロトタイプの投稿に成功しました。");
 
-    } catch (Exception e){
-        // 処理のどこかで問題が発生した際に表示
-        e.printStackTrace();
-        return ResponseEntity.status(500).body("エラーが発生しました: " + e.getMessage());
+    } catch (Exception e) {
+      // 処理のどこかで問題が発生した際に表示
+      e.printStackTrace();
+      return ResponseEntity.status(500).body("エラーが発生しました: " + e.getMessage());
     }
-}
+  }
 }
 
 

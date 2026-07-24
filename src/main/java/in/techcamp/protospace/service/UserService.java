@@ -1,11 +1,5 @@
 package in.techcamp.protospace.service;
 
-
-import java.util.List;
-import java.util.Map;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import in.techcamp.protospace.dto.UserDto;
 import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
@@ -14,6 +8,11 @@ import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import in.techcamp.protospace.security.JwtTokenProvider;
+import java.util.List;
+import java.util.Map;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -24,7 +23,12 @@ public class UserService {
   private final AffiliationRepository affiliationRepository;
   private final JwtTokenProvider jwtTokenProvider;
 
-  public UserService(UserRepository userRepository, PositionRepository positionRepository, AffiliationRepository affiliationRepository, PasswordEncoder passwordEncoder,JwtTokenProvider jwtTokenProvider) {
+  public UserService(
+      UserRepository userRepository,
+      PositionRepository positionRepository,
+      AffiliationRepository affiliationRepository,
+      PasswordEncoder passwordEncoder,
+      JwtTokenProvider jwtTokenProvider) {
     this.userRepository = userRepository;
     this.positionRepository = positionRepository;
     this.affiliationRepository = affiliationRepository;
@@ -38,7 +42,7 @@ public class UserService {
   }
 
   // ユーザー新規登録
-  @Transactional 
+  @Transactional
   public UserResponseDto insertUser(UserDto userDto) {
     if (!userDto.getPassword().equals(userDto.getPasswordConfirm())) {
       throw new ValidationException(
@@ -46,8 +50,7 @@ public class UserService {
     }
 
     if (userRepository.existsByEmail(userDto.getEmail())) {
-      throw new ValidationException(
-          Map.of("email", List.of("このメールアドレスは既に登録されています。")), "登録エラー");
+      throw new ValidationException(Map.of("email", List.of("このメールアドレスは既に登録されています。")), "登録エラー");
     }
 
     UserEntity user = new UserEntity();
@@ -69,7 +72,6 @@ public class UserService {
       affiliationRepository.insert(userId, userDto.getAffiliation());
     }
 
-
     String token = jwtTokenProvider.generateToken(String.valueOf(userId));
 
     return new UserResponseDto(
@@ -78,7 +80,6 @@ public class UserService {
         user.getUsername(),
         user.getEmail(),
         userDto.getPosition(),
-        userDto.getAffiliation()
-    );
+        userDto.getAffiliation());
   }
 }
