@@ -35,7 +35,7 @@ class UserServiceTest {
   @Mock private PositionRepository positionRepository;
   @Mock private AffiliationRepository affiliationRepository;
   @Mock private PasswordEncoder passwordEncoder;
-  @Mock private JwtTokenProvider jwtTokenProvider; 
+  @Mock private JwtTokenProvider jwtTokenProvider;
 
   @InjectMocks private UserService userService;
 
@@ -108,8 +108,7 @@ class UserServiceTest {
                 ValidationException valEx = (ValidationException) ex;
                 assertThat(valEx.getMessage()).isEqualTo("パスワードが一致しません");
                 assertThat(valEx.getErrors()).containsKey("passwordConfirm");
-                assertThat(valEx.getErrors().get("passwordConfirm"))
-                    .contains("パスワードが一致しません");
+                assertThat(valEx.getErrors().get("passwordConfirm")).contains("パスワードが一致しません");
               });
 
       // 異常系では DB へのアクセスが発生しないことを保証
@@ -128,8 +127,7 @@ class UserServiceTest {
                 ValidationException valEx = (ValidationException) ex;
                 assertThat(valEx.getMessage()).isEqualTo("登録エラー");
                 assertThat(valEx.getErrors()).containsKey("email");
-                assertThat(valEx.getErrors().get("email"))
-                    .contains("このメールアドレスは既に登録されています。");
+                assertThat(valEx.getErrors().get("email")).contains("このメールアドレスは既に登録されています。");
               });
 
       verify(userRepository, never()).insertUser(any());
