@@ -5,6 +5,7 @@ package in.techcamp.protospace.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,5 +41,23 @@ public class PrototypeController {
         e.printStackTrace();
         return ResponseEntity.status(500).body("エラーが発生しました: " + e.getMessage());
     }
-}
+    }
+
+    @PostMapping("/{id}/update")
+    public ResponseEntity<String> updatePrototype(
+        @PathVariable Long id,
+        @ModelAttribute PrototypeForm form,
+        Authentication authentication
+    ) {
+        try{
+            Long userId = Long.valueOf(authentication.getName());
+
+            prototypeService.updatePrototype(id, form, userId);
+
+            return ResponseEntity.ok("プロトタイプの更新に成功しました");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponsEntity.badRequest
+        }
+    }
 }
