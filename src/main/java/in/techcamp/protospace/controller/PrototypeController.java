@@ -1,7 +1,9 @@
 package in.techcamp.protospace.controller;
 
+import java.util.List;
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
 import in.techcamp.protospace.service.PrototypeService;
+import in.techcamp.protospace.entity.PrototypeEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +24,14 @@ public class PrototypeController {
   public PrototypeController(PrototypeService prototypeService) {
     this.prototypeService = prototypeService;
   }
+
+  // プロトタイプ一覧取得機能
+    @GetMapping("/")
+    public ResponseEntity<List<PrototypeEntity>> getAllPrototypes() {
+        List<PrototypeEntity> prototypes = prototypeService.getAllPrototypes();
+        return ResponseEntity.ok(prototypes);
+    }
+
 
 // プロトタイプ詳細データの取得
   @GetMapping("/{id}")
