@@ -24,7 +24,7 @@ public class PrototypeController {
     private final PrototypeService prototypeService;
 
     // プロトタイプ投稿機能
-    @PostMapping("/")
+    @PostMapping("/new")
     ResponseEntity<String> createPrototype(
         @ModelAttribute PrototypeForm form,
         Authentication authentication
@@ -50,14 +50,15 @@ public class PrototypeController {
         Authentication authentication
     ) {
         try{
+            // IDの取得
             Long userId = Long.valueOf(authentication.getName());
-
+            // サービス層に記述
             prototypeService.updatePrototype(id, form, userId);
 
             return ResponseEntity.ok("プロトタイプの更新に成功しました");
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponsEntity.badRequest
+            return ResponseEntity.badRequest().body("更新に失敗しました：" + e.getMessage());
         }
     }
 }
