@@ -15,10 +15,12 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
+    // 記事IDを使用してコメントを取得
     public List<CommentResponseDto> getCommentsByPrototypeId(Long prototypeId) {
         return commentRepository.findByPrototypeId(prototypeId);
     }
 
+    // コメント作成
     @Transactional
     public void createComment(Long prototypeId, Long userId, CommentRequestDto request) {
         CommentEntity comment = new CommentEntity();

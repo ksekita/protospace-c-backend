@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-//ユーザー情報を返すためのファイル
+// ユーザー情報を返すためのファイル
 public class UserResponseDto {
   private String token;
   private Long id;

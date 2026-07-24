@@ -1,14 +1,16 @@
 package in.techcamp.protospace.validation;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Reader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.passay.DictionaryRule;
 import org.passay.LengthRule;
 import org.passay.PasswordData;
@@ -22,44 +24,35 @@ import org.passay.dictionary.WordListDictionary;
 import org.passay.dictionary.WordLists;
 import org.passay.dictionary.sort.ArraysSort;
 
-import jakarta.validation.ConstraintValidator;
-import jakarta.validation.ConstraintValidatorContext;
-import lombok.extern.slf4j.Slf4j;
-
 // ユーザーの作成したパスワードが安全の基準を満たしているかをチェックするクラス
 @Slf4j
 public class PasswordConstraintValidator implements ConstraintValidator<ValidPassword, String> {
 
   private DictionaryRule dictionaryRule;
 
-  private  PasswordValidator validator;
+  private PasswordValidator validator;
 
   // validatorの初期化処理
   @Override
   public void initialize(ValidPassword constraintAnnotation) {
 
     List<Rule> rules = new ArrayList<>();
-    rules.add(new LengthRule(6, 64)); //6文字以上64文字以内
-    rules.add(new WhitespaceRule());//スペース禁止
-    rules.add(new RepeatCharacterRegexRule(3));//同じ文字の連続(3回以上)禁止
-
+    rules.add(new LengthRule(6, 64)); // 6文字以上64文字以内
+    rules.add(new WhitespaceRule()); // スペース禁止
+    rules.add(new RepeatCharacterRegexRule(3)); // 同じ文字の連続(3回以上)禁止
 
     try (
-      // 危険なパスワード一覧を読み込む
-      InputStream is = getClass().getClassLoader().getResourceAsStream("passwords.txt")
-    ) {
+    // 危険なパスワード一覧を読み込む
+    InputStream is = getClass().getClassLoader().getResourceAsStream("passwords.txt")) {
       if (is == null) {
         throw new FileNotFoundException("passwords.txt が resources 直下に見つかりません。");
       }
 
       Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
 
-      WordListDictionary wordListDictionary = new WordListDictionary(
-          WordLists.createFromReader(
-              new Reader[] { reader }, 
-              false,
-              new ArraysSort()
-          ));
+      WordListDictionary wordListDictionary =
+          new WordListDictionary(
+              WordLists.createFromReader(new Reader[] {reader}, false, new ArraysSort()));
 
       this.dictionaryRule = new DictionaryRule(wordListDictionary);
 
@@ -73,7 +66,7 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
     if (this.dictionaryRule != null) {
       rules.add(this.dictionaryRule);
     }
-    this.validator=new PasswordValidator(rules);
+    this.validator = new PasswordValidator(rules);
   }
 
   // 検証処理
@@ -98,7 +91,9 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
       }
     }
 
-    context.buildConstraintViolationWithTemplate(String.join("。 ", errorMessages)).addConstraintViolation();
+    context
+        .buildConstraintViolationWithTemplate(String.join("。 ", errorMessages))
+        .addConstraintViolation();
     return false;
   }
 }

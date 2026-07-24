@@ -33,17 +33,21 @@ public class SecurityConfig {
 
   @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
+    http.csrf(csrf -> csrf.disable())
         .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .headers(headers -> headers.frameOptions(frame -> frame.sameOrigin()))
 
         // URLごとのアクセス権限設定
-        .authorizeHttpRequests(auth -> auth
-          .requestMatchers(HttpMethod.GET, "/api/prototypes/*/comments").permitAll()
-            .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**").permitAll()
-            .anyRequest().authenticated());
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers(HttpMethod.GET, "/api/prototypes/*/comments")
+                    .permitAll()
+                    .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**")
+                    .permitAll()
+                    .anyRequest()
+                    .authenticated());
 
     http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -58,7 +62,8 @@ public class SecurityConfig {
 
   // 認証マネージャー
   @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+  public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)
+      throws Exception {
     return configuration.getAuthenticationManager();
   }
 

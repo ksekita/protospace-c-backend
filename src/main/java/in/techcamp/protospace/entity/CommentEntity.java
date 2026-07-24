@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class CommentEntity {
-    private Long id;
-    private String content;
-    private Long userId;
-    private Long prototypeId;
+  private Long id;
+  private String content;
+  private Long userId;
+  private Long prototypeId;
 }

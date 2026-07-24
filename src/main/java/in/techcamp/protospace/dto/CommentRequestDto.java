@@ -5,6 +5,6 @@ import lombok.Data;
 
 @Data
 public class CommentRequestDto {
-    @NotBlank(message = "コメントを入力してください")
-    private String content;
+  @NotBlank(message = "コメントを入力してください")
+  private String content;
 }

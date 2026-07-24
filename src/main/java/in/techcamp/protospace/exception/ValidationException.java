@@ -3,7 +3,7 @@ package in.techcamp.protospace.exception;
 import java.util.List;
 import java.util.Map;
 
-//自作例外処理
+// 自作例外処理
 public class ValidationException extends RuntimeException {
   private final Map<String, List<String>> errors;
 
