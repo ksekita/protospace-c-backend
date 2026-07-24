@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -41,7 +42,9 @@ public class SecurityConfig {
         // URLごとのアクセス権限設定
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**")
+                auth
+                .requestMatchers(HttpMethod.GET, "/api/prototypes/*/comments", "/api/users/**").permitAll()
+                .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated());

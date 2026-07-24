@@ -8,6 +8,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import in.techcamp.protospace.dto.UserDetailResponseDto;
 import in.techcamp.protospace.dto.UserDto;
 import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
@@ -133,4 +134,50 @@ class UserServiceTest {
       verify(userRepository, never()).insertUser(any());
     }
   }
+
+  @Nested
+  @DisplayName("ユーザー詳細取得処理 (getUserDetail)")
+  class GetUserDetailTest {
+
+    @Test
+    @DisplayName("【正常系】ユーザーの基本情報・役職・所属が正しく取得できること")
+    void getUserDetail_Success() {
+      // 準備
+      UserEntity mockUser = new UserEntity();
+      mockUser.setId(1L);
+      mockUser.setUsername("テスト太郎");
+      mockUser.setEmail("test@example.com");
+
+      when(userRepository.selectById(1L)).thenReturn(mockUser);
+      when(positionRepository.findByUserId(1L)).thenReturn("リーダー");
+      when(affiliationRepository.findByUserId(1L)).thenReturn("株式会社テスト");
+
+      // 実行
+      UserDetailResponseDto result = userService.getUserDetail(1L);
+
+      // 検証
+      assertThat(result.getId()).isEqualTo(1L);
+      assertThat(result.getUsername()).isEqualTo("テスト太郎");
+      assertThat(result.getEmail()).isEqualTo("test@example.com");
+      assertThat(result.getPosition()).isEqualTo("リーダー");
+      assertThat(result.getAffiliation()).isEqualTo("株式会社テスト");
+    }
+
+    @Test
+    @DisplayName("【異常系】存在しないユーザーIDを指定した場合、RuntimeExceptionが発生すること")
+    void getUserDetail_UserNotFound_ThrowsException() {
+      // 準備: DBからユーザーが見つからない(null)状態をモック
+      when(userRepository.selectById(999L)).thenReturn(null);
+
+      // 実行・検証
+      assertThatThrownBy(() -> userService.getUserDetail(999L))
+          .isInstanceOf(RuntimeException.class)
+          .hasMessage("ユーザーが見つかりません");
+
+      // ユーザーが見つからなかった時点で処理が止まり、他の検索が実行されないことを検証
+      verify(positionRepository, never()).findByUserId(any());
+      verify(affiliationRepository, never()).findByUserId(any());
+    }
+  }
+
 }
