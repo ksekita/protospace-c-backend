@@ -1,37 +1,37 @@
-# ==========================================
-# 1. ビルドステージ (アプリケーションのコンパイル)
-# ==========================================
-FROM eclipse-temurin:17-jdk-jammy AS builder
+FROM eclipse-temurin:21-jdk-jammy AS builder
 WORKDIR /app
 
-# Gradleラッパーと設定ファイルを先にコピー (キャッシュを活用して次回以降のビルドを高速化)
+# キャッシュを有効活用するため、設定ファイルとラッパーを先にコピー
 COPY gradlew .
 COPY gradle gradle
 COPY build.gradle .
 COPY settings.gradle .
 
-# gradlewに実行権限を付与
+# Git側でgradlewに実行権限をつけていれば、chmodは不要
 RUN chmod +x ./gradlew
-
-# 依存関係をダウンロード
 RUN ./gradlew dependencies --no-daemon || true
 
-# ソースコードをコピーしてビルド (本番デプロイ用にテストはスキップ)
+# ソースコードをコピーしてビルド
 COPY src src
 RUN ./gradlew build -x test --no-daemon
 
-# ==========================================
-# 2. 実行ステージ (軽量な実行環境の作成)
-# ==========================================
-FROM eclipse-temurin:17-jre-jammy
+# -plain.jar 以外を app.jar として特定・コピー
+RUN find build/libs -name "*.jar" -not -name "*-plain.jar" -exec cp {} app.jar \;
+
+FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
-# ビルドステージで作成されたjarファイルをコピー
-COPY --from=builder /app/build/libs/*.jar app.jar
+ENV TZ=Asia/Tokyo
 
-# 実行するユーザーをrootから一般ユーザーに変更 (セキュリティ対策として推奨)
-RUN useradd -m appuser
+# ホームディレクトリを持たないシステムユーザーとして作成
+RUN useradd -r -s /bin/false appuser
+
+# COPY時に直接オーナーを変更してイメージサイズを削減
+COPY --chown=appuser:appuser --from=builder /app/app.jar app.jar
+
 USER appuser
 
-# アプリケーションの起動
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EXPOSE 8080
+
+# exec を追加して PID 1 問題を回避しつつ JAVA_OPTS を展開
+ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
