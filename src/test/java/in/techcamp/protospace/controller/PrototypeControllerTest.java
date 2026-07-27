@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,7 +67,7 @@ public class PrototypeControllerTest {
 
         // 動作確認
         .andExpect(status().isOk())
-        .andExpect(content().string("プロトタイプの投稿に成功しました。"));
+        .andExpect(jsonPath("$.message").value("プロトタイプの投稿に成功しました。"));
 
     verify(prototypeService).createPrototype(any(), eq(1L));
   }
