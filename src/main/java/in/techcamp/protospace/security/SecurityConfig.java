@@ -43,9 +43,8 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth
-                .requestMatchers(HttpMethod.GET, "/api/prototypes/*/comments", "/api/users/**").permitAll()
-                .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**")
-                    .permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/prototypes/**", "/api/users/**").permitAll()
+                .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**").permitAll()
                     .anyRequest()
                     .authenticated());
 
