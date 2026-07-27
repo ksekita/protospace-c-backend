@@ -3,6 +3,7 @@ package in.techcamp.protospace.controller;
 import java.util.List;
 import java.util.Map;
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.service.PrototypeService;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import org.springframework.http.ResponseEntity;
@@ -97,4 +98,11 @@ public class PrototypeController {
             return ResponseEntity.badRequest().body(Map.of("error", "削除に失敗しました：" + e.getMessage()));
         }
     }
+    // ユーザーが作成したプロトタイプ一覧の取得
+    @GetMapping("/users/{userId}")
+  public ResponseEntity<List<UserPrototypeListDto>> getPrototypesByUserId(
+      @PathVariable("userId") Long userId) {
+    List<UserPrototypeListDto> response = prototypeService.getPrototypesByUserId(userId);
+    return ResponseEntity.ok(response);
+  }
 }

@@ -46,7 +46,7 @@ class CommentServiceTest {
       // 検証
       assertThat(result).hasSize(1);
       assertThat(result.get(0).getContent()).isEqualTo("モックのための文章です。");
-      assertThat(result.get(0).getUserName()).isEqualTo("テスト太郎");
+      assertThat(result.get(0).getName()).isEqualTo("テスト太郎");
     }
   }
 

@@ -128,4 +128,61 @@ class PrototypeServiceTest {
       verify(prototypeMapper, never()).delete(any());
     }
   }
+  @Nested
+  @DisplayName("特定ユーザーのプロトタイプ一覧取得処理 (getPrototypesByUserId)")
+  class GetPrototypesByUserIdTest {
+
+    @Test
+    @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに変換されて返却されること")
+    void getPrototypesByUserId_Success() {
+      // 準備
+      Long userId = 1L;
+      
+      PrototypeEntity entity1 = new PrototypeEntity();
+      entity1.setId(10L);
+      entity1.setTitle("タイトル1");
+      entity1.setCatchCopy("キャッチコピー1");
+      entity1.setImage("image1.png");
+      entity1.setUserId(userId);
+
+      PrototypeEntity entity2 = new PrototypeEntity();
+      entity2.setId(11L);
+      entity2.setTitle("タイトル2");
+      entity2.setCatchCopy("キャッチコピー2");
+      entity2.setImage("image2.png");
+      entity2.setUserId(userId);
+
+      when(prototypeMapper.findByUserId(userId)).thenReturn(java.util.List.of(entity1, entity2));
+
+      // 実行
+      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result = 
+          prototypeService.getPrototypesByUserId(userId);
+
+      // 検証
+      assertThat(result).hasSize(2);
+      
+      assertThat(result.get(0).getId()).isEqualTo(10L);
+      assertThat(result.get(0).getTitle()).isEqualTo("タイトル1");
+      assertThat(result.get(0).getCatchCopy()).isEqualTo("キャッチコピー1");
+      assertThat(result.get(0).getImage()).isEqualTo("image1.png");
+
+      assertThat(result.get(1).getId()).isEqualTo(11L);
+      assertThat(result.get(1).getTitle()).isEqualTo("タイトル2");
+    }
+
+    @Test
+    @DisplayName("【正常系】投稿が0件の場合、空のリストが返却されること")
+    void getPrototypesByUserId_Empty() {
+      // 準備
+      Long userId = 1L;
+      when(prototypeMapper.findByUserId(userId)).thenReturn(java.util.Collections.emptyList());
+
+      // 実行
+      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result = 
+          prototypeService.getPrototypesByUserId(userId);
+
+      // 検証
+      assertThat(result).isEmpty();
+    }
+  }
 }

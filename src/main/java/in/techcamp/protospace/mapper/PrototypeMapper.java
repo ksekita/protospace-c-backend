@@ -28,10 +28,13 @@ public interface PrototypeMapper {
 
   // idを使用して検索
   @Select(
-      "SELECT id, title, catch_copy AS catchCopy, concept, image, user_id AS userId FROM"
+      "SELECT id, title, catch_copy, concept, image, user_id FROM"
           + " prototypes WHERE id = #{id}")
   PrototypeEntity findById(Long id);
 
   @Delete("DELETE FROM prototypes WHERE id = #{id}")
   void delete(Long id);
+
+  @Select("SELECT id, title, catch_copy, concept, image, user_id FROM prototypes WHERE user_id = #{userId}")
+  List<PrototypeEntity> findByUserId(Long userId);
 }

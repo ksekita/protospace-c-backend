@@ -158,7 +158,7 @@ class UserServiceTest {
 
       // 検証
       assertThat(result.getId()).isEqualTo(1L);
-      assertThat(result.getUsername()).isEqualTo("テスト太郎");
+      assertThat(result.getName()).isEqualTo("テスト太郎");
       assertThat(result.getEmail()).isEqualTo("test@example.com");
       assertThat(result.getPosition()).isEqualTo("リーダー");
       assertThat(result.getAffiliation()).isEqualTo("株式会社テスト");

@@ -100,7 +100,7 @@ public class UserService {
         // 3. DTOに詰めて返す
         UserDetailResponseDto response = new UserDetailResponseDto();
         response.setId(user.getId());
-        response.setUsername(user.getName());
+        response.setName(user.getName());
         response.setEmail(user.getEmail());
         response.setPosition(position);
         response.setAffiliation(affiliation);
