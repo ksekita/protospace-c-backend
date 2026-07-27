@@ -87,4 +87,21 @@ public class PrototypeService {
   public List<PrototypeEntity> getAllPrototypes() {
     return prototypeMapper.findAll();
   }
+
+  // 記事の削除
+  public void deletePrototype(Long id, Long userId) throws Exception {
+    PrototypeEntity existingPrototype = prototypeMapper.findById(id);
+    if (existingPrototype == null) {
+      throw new IllegalArgumentException("指定されたプロトタイプが見つかりません");
+    }
+    if (!existingPrototype.getUserId().equals(userId)) {
+      throw new Exception("他のユーザーの投稿を削除する権限がありません");
+    }
+    String savedFileName = existingPrototype.getImage();
+    if (savedFileName != null && !savedFileName.isEmpty()) {
+      Path filePath = Paths.get("uploads/").resolve(savedFileName).toAbsolutePath().normalize();
+      Files.deleteIfExists(filePath);
+    }
+    prototypeMapper.delete(id);
+  }
 }

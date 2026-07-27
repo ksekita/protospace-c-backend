@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Delete;
 
 // prototypeテーブルを操作するインターフェース
 @Mapper
@@ -26,4 +27,7 @@ public interface PrototypeMapper {
       "SELECT id, title, catch_copy AS catchCopy, concept, image, user_id AS userId FROM"
           + " prototypes WHERE id = #{id}")
   PrototypeEntity findById(Long id);
+
+  @Delete("DELETE FROM prototypes WHERE id = #{id}")
+  void delete(Long id);
 }
