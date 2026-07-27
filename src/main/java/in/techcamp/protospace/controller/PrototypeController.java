@@ -44,7 +44,7 @@ public class PrototypeController {
   }
 
    // プロトタイプ投稿機能
-    @PostMapping("/new")
+    @PostMapping("/")
     ResponseEntity<Map<String,String>> createPrototype(
         @ModelAttribute PrototypeForm form,
         Authentication authentication
