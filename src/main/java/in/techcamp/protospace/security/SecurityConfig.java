@@ -43,7 +43,7 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth
-                .requestMatchers(HttpMethod.GET, "/api/prototypes/**", "/api/users/**")
+                .requestMatchers(HttpMethod.GET, "/api/prototypes/**", "/api/users/**","/api/prototypes/*/comments")
                     .permitAll()
                 .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**")
                     .permitAll()

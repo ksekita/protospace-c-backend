@@ -9,10 +9,10 @@ import in.techcamp.protospace.mapper.PrototypeMapper;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Path; 
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.UUID;
+import java.util.UUID; 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,8 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class PrototypeService {
-  private final PrototypeMapper prototypeMapper;
 
+  private final PrototypeMapper prototypeMapper;
   private final PrototypeRepository prototypeRepository;
   private final UserRepository userRepository;
 
@@ -45,6 +45,7 @@ public class PrototypeService {
         userName);
   }
 
+  // 記事新規作成
   public void createPrototype(PrototypeForm form, Long userId) throws Exception {
 
     // 画像の保存処理
@@ -66,7 +67,6 @@ public class PrototypeService {
 
         Path filePath = uploadPath.resolve(savedFileName);
         imageFile.transferTo(filePath);
-        // ここまで
       }
     } else {
       throw new IllegalArgumentException("画像ファイルが選択されていません");
@@ -83,6 +83,7 @@ public class PrototypeService {
     prototypeMapper.insert(entity);
   }
 
+  // 記事一覧を取得
   public List<PrototypeEntity> getAllPrototypes() {
     return prototypeMapper.findAll();
   }
