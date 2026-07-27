@@ -173,7 +173,7 @@ class UserServiceTest {
       // 実行・検証
       assertThatThrownBy(() -> userService.getUserDetail(999L))
           .isInstanceOf(ResponseStatusException.class)
-          .hasMessage("ユーザーが見つかりません");
+          .hasMessageContaining("ユーザーが見つかりません");
 
       // ユーザーが見つからなかった時点で処理が止まり、他の検索が実行されないことを検証
       verify(positionRepository, never()).findByUserId(any());
