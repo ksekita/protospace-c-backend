@@ -180,5 +180,4 @@ class UserServiceTest {
       verify(affiliationRepository, never()).findByUserId(any());
     }
   }
-
 }

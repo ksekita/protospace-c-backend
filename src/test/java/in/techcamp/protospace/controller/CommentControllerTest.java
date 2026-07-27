@@ -40,7 +40,7 @@ class CommentControllerTest {
   @Nested
   @DisplayName("コメント一覧取得API (GET /api/prototypes/{prototypeId}/comments)")
   class GetCommentsTest {
-    
+
     @Test
     @DisplayName("【正常系】コメント一覧をJSONで取得できること (トークン不要)")
     void getComments_Success() throws Exception {

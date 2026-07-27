@@ -10,8 +10,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
     // バックエンドのルート直下にある「uploads」フォルダの中身を返す設定
-    registry
-        .addResourceHandler("/images/**")
-        .addResourceLocations("file:uploads/");
+    registry.addResourceHandler("/images/**").addResourceLocations("file:uploads/");
   }
 }

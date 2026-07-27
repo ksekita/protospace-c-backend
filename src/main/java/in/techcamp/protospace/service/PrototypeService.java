@@ -10,12 +10,11 @@ import in.techcamp.protospace.mapper.PrototypeMapper;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import java.nio.file.Files;
-import java.nio.file.Path; 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,7 +79,6 @@ public class PrototypeService {
       throw new IllegalArgumentException("画像ファイルが選択されていません");
     }
 
-    // ★修正: 上記の閉じカッコの位置を修正し、以下のDB保存処理をメソッド内に含めました
     // DB保存
     PrototypeEntity entity = new PrototypeEntity();
     entity.setTitle(form.getTitle());
@@ -128,7 +126,7 @@ public class PrototypeService {
       }
     }
 
-    // 新しい内容をEntityに詰める 
+    // 新しい内容をEntityに詰める
     existingPrototype.setTitle(form.getTitle());
     existingPrototype.setCatchCopy(form.getCatchCopy());
     existingPrototype.setConcept(form.getConcept());
@@ -154,18 +152,22 @@ public class PrototypeService {
     }
     prototypeMapper.delete(id);
   }
+
   public List<UserPrototypeListDto> getPrototypesByUserId(Long userId) {
     // Mapperを使ってデータベースから取得
     List<PrototypeEntity> entities = prototypeMapper.findByUserId(userId);
 
     // EntityのリストをDTOのリストに変換（詰め替え）
-    return entities.stream().map(entity -> {
-      UserPrototypeListDto dto = new UserPrototypeListDto();
-      dto.setId(entity.getId());
-      dto.setTitle(entity.getTitle());
-      dto.setCatchCopy(entity.getCatchCopy());
-      dto.setImage(entity.getImage());
-      return dto;
-    }).collect(Collectors.toList());
+    return entities.stream()
+        .map(
+            entity -> {
+              UserPrototypeListDto dto = new UserPrototypeListDto();
+              dto.setId(entity.getId());
+              dto.setTitle(entity.getTitle());
+              dto.setCatchCopy(entity.getCatchCopy());
+              dto.setImage(entity.getImage());
+              return dto;
+            })
+        .collect(Collectors.toList());
   }
 }
