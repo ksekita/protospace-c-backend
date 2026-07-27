@@ -6,11 +6,15 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 // prototypeテーブルを操作するインターフェース
 @Mapper
 public interface PrototypeMapper {
 
+    // 編集機能
+    @Update("UPDATE prototypes SET title = #{title}, catch_copy = #{catchCopy}, concept = #{concept}, image = #{image} WHERE id = #{id}")
+    void update(PrototypeEntity prototype);
   // 新規投稿による記事の追加
   @Insert(
       "INSERT INTO prototypes (title, catch_copy, concept, image, user_id) VALUES (#{title}, #{catchCopy}, #{concept}, #{image}, #{userId})")
