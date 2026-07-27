@@ -13,5 +13,5 @@ public class PrototypeDetailResponseDto {
   private String concept;
   private String image;
   private Long userId;
-  private String userName; 
+  private String userName;
 }

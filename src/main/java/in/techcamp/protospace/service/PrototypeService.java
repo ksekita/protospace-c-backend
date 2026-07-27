@@ -4,30 +4,26 @@ import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ResourceNotFoundException;
-import in.techcamp.protospace.repository.PrototypeRepository;
-import in.techcamp.protospace.repository.UserRepository;
-import org.springframework.stereotype.Service;
 import in.techcamp.protospace.form.PrototypeForm;
 import in.techcamp.protospace.mapper.PrototypeMapper;
-import org.springframework.web.multipart.MultipartFile;
+import in.techcamp.protospace.repository.PrototypeRepository;
+import in.techcamp.protospace.repository.UserRepository;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
+@RequiredArgsConstructor
 public class PrototypeService {
+  private final PrototypeMapper prototypeMapper;
 
   private final PrototypeRepository prototypeRepository;
   private final UserRepository userRepository;
-  private final PrototypeMapper prototypeMapper;
-
-  public PrototypeService(
-      PrototypeRepository prototypeRepository, UserRepository userRepository,PrototypeMapper prototypeMapper) {
-    this.prototypeRepository = prototypeRepository;
-    this.userRepository = userRepository;
-    this.prototypeMapper=prototypeMapper;
-  }
 
   // 記事詳細を取得
   public PrototypeDetailResponseDto getPrototypeDetail(Long id) {
@@ -50,8 +46,8 @@ public class PrototypeService {
   }
 
   public void createPrototype(PrototypeForm form, Long userId) throws Exception {
-        
-     // 画像の保存処理
+
+    // 画像の保存処理
     MultipartFile imageFile = form.getImage();
     String savedFileName = null;
 
@@ -85,5 +81,9 @@ public class PrototypeService {
     entity.setUserId(userId);
 
     prototypeMapper.insert(entity);
+  }
+
+  public List<PrototypeEntity> getAllPrototypes() {
+    return prototypeMapper.findAll();
   }
 }
