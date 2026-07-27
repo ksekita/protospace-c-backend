@@ -45,6 +45,11 @@ public class PrototypeService {
         name);
   }
 
+  // 記事一覧を取得
+  public List<PrototypeEntity> getAllPrototypes() {
+    return prototypeMapper.findAll();
+  }
+
   // 記事新規作成
   public void createPrototype(PrototypeForm form, Long userId) throws Exception {
 
@@ -72,6 +77,7 @@ public class PrototypeService {
       throw new IllegalArgumentException("画像ファイルが選択されていません");
     }
 
+    // ★修正: 上記の閉じカッコの位置を修正し、以下のDB保存処理をメソッド内に含めました
     // DB保存
     PrototypeEntity entity = new PrototypeEntity();
     entity.setTitle(form.getTitle());
@@ -83,9 +89,50 @@ public class PrototypeService {
     prototypeMapper.insert(entity);
   }
 
-  // 記事一覧を取得
-  public List<PrototypeEntity> getAllPrototypes() {
-    return prototypeMapper.findAll();
+  // 記事の更新
+  public void updatePrototype(Long id, PrototypeForm form, Long userId) throws Exception {
+
+    // 編集に必要なプロトタイプをエンティティから引っ張ってくる
+    PrototypeEntity existingPrototype = prototypeMapper.findById(id);
+
+    // 例外処理
+    if (existingPrototype == null) {
+      throw new IllegalArgumentException("指定されたプロトタイプが見つかりません");
+    }
+
+    if (!existingPrototype.getUserId().equals(userId)) {
+      throw new Exception("他のユーザーの投稿を編集する権限がありません");
+    }
+
+    MultipartFile imageFile = form.getImage();
+    // 古い画像をキープする
+    String savedFileName = existingPrototype.getImage();
+
+    // 新しい画像が送られてきた場合だけ上書きする
+    if (imageFile != null && !imageFile.isEmpty()) {
+      String originalName = imageFile.getOriginalFilename();
+      if (originalName != null && originalName.contains(".")) {
+        String extension = originalName.substring(originalName.lastIndexOf("."));
+        savedFileName = UUID.randomUUID().toString() + extension;
+
+        Path uploadPath = Paths.get("uploads/").toAbsolutePath().normalize();
+        if (!Files.exists(uploadPath)) {
+          Files.createDirectories(uploadPath);
+        }
+
+        Path filePath = uploadPath.resolve(savedFileName);
+        imageFile.transferTo(filePath);
+      }
+    }
+
+    // 新しい内容をEntityに詰める 
+    existingPrototype.setTitle(form.getTitle());
+    existingPrototype.setCatchCopy(form.getCatchCopy());
+    existingPrototype.setConcept(form.getConcept());
+    existingPrototype.setImage(savedFileName);
+
+    // Mapperでデータベース上書き
+    prototypeMapper.update(existingPrototype);
   }
 
   // 記事の削除
