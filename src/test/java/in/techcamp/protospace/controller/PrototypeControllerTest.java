@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,6 +20,7 @@ import in.techcamp.protospace.service.PrototypeService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,8 +29,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import org.junit.jupiter.api.Nested;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -104,8 +104,8 @@ public class PrototypeControllerTest {
       doNothing().when(prototypeService).deletePrototype(1L, 1L);
 
       // 実行・検証
-      mockMvc.perform(delete("/api/prototypes/1")
-          .header("Authorization", "Bearer " + token))
+      mockMvc
+          .perform(delete("/api/prototypes/1").header("Authorization", "Bearer " + token))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.message").value("プロトタイプの削除に成功しました"));
     }
@@ -116,15 +116,17 @@ public class PrototypeControllerTest {
     void deletePrototype_Fail() throws Exception {
       // 準備 (Service層で例外が発生するようにモックする)
       doThrow(new Exception("他のユーザーの投稿を削除する権限がありません"))
-          .when(prototypeService).deletePrototype(1L, 1L);
+          .when(prototypeService)
+          .deletePrototype(1L, 1L);
 
       // 実行・検証
-      mockMvc.perform(delete("/api/prototypes/1")
-          .header("Authorization", "Bearer " + token))
+      mockMvc
+          .perform(delete("/api/prototypes/1").header("Authorization", "Bearer " + token))
           .andExpect(status().isBadRequest())
           .andExpect(jsonPath("$.error").value("削除に失敗しました：他のユーザーの投稿を削除する権限がありません"));
     }
   }
+
   @Nested
   @DisplayName("特定ユーザーのプロトタイプ一覧取得API (GET /api/prototypes/users/{userId})")
   class GetPrototypesByUserIdApiTest {
@@ -135,8 +137,9 @@ public class PrototypeControllerTest {
     void getPrototypesByUserId_Success() throws Exception {
       // 準備
       Long userId = 1L;
-      
-      in.techcamp.protospace.dto.UserPrototypeListDto dto = new in.techcamp.protospace.dto.UserPrototypeListDto();
+
+      in.techcamp.protospace.dto.UserPrototypeListDto dto =
+          new in.techcamp.protospace.dto.UserPrototypeListDto();
       dto.setId(10L);
       dto.setTitle("テストタイトル");
       dto.setCatchCopy("テストキャッチコピー");
@@ -145,8 +148,9 @@ public class PrototypeControllerTest {
       when(prototypeService.getPrototypesByUserId(userId)).thenReturn(List.of(dto));
 
       // 実行・検証
-      mockMvc.perform(get("/api/prototypes/users/" + userId)
-              .header("Authorization", "Bearer " + token))
+      mockMvc
+          .perform(
+              get("/api/prototypes/users/" + userId).header("Authorization", "Bearer " + token))
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(1))
           .andExpect(jsonPath("$[0].id").value(10))

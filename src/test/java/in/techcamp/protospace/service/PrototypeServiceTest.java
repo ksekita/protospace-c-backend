@@ -2,6 +2,9 @@ package in.techcamp.protospace.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
@@ -18,10 +21,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PrototypeServiceTest {
@@ -73,6 +72,7 @@ class PrototypeServiceTest {
           .hasMessage("プロトタイプが見つかりません");
     }
   }
+
   @Nested
   @DisplayName("プロトタイプ削除処理 (deletePrototype)")
   class DeletePrototypeTest {
@@ -128,6 +128,7 @@ class PrototypeServiceTest {
       verify(prototypeMapper, never()).delete(any());
     }
   }
+
   @Nested
   @DisplayName("特定ユーザーのプロトタイプ一覧取得処理 (getPrototypesByUserId)")
   class GetPrototypesByUserIdTest {
@@ -137,7 +138,7 @@ class PrototypeServiceTest {
     void getPrototypesByUserId_Success() {
       // 準備
       Long userId = 1L;
-      
+
       PrototypeEntity entity1 = new PrototypeEntity();
       entity1.setId(10L);
       entity1.setTitle("タイトル1");
@@ -155,12 +156,12 @@ class PrototypeServiceTest {
       when(prototypeMapper.findByUserId(userId)).thenReturn(java.util.List.of(entity1, entity2));
 
       // 実行
-      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result = 
+      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
           prototypeService.getPrototypesByUserId(userId);
 
       // 検証
       assertThat(result).hasSize(2);
-      
+
       assertThat(result.get(0).getId()).isEqualTo(10L);
       assertThat(result.get(0).getTitle()).isEqualTo("タイトル1");
       assertThat(result.get(0).getCatchCopy()).isEqualTo("キャッチコピー1");
@@ -178,7 +179,7 @@ class PrototypeServiceTest {
       when(prototypeMapper.findByUserId(userId)).thenReturn(java.util.Collections.emptyList());
 
       // 実行
-      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result = 
+      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
           prototypeService.getPrototypesByUserId(userId);
 
       // 検証
