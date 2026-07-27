@@ -11,9 +11,13 @@ import in.techcamp.protospace.repository.UserRepository;
 import in.techcamp.protospace.security.JwtTokenProvider;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -87,7 +91,7 @@ public class UserService {
         // 1. ユーザー基本情報の取得
         UserEntity user = userRepository.selectById(userId);
         if (user == null) {
-            throw new RuntimeException("ユーザーが見つかりません");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ユーザーが見つかりません");
         }
 
         // 2. 役職と所属の取得

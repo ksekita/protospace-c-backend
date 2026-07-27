@@ -28,6 +28,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -171,7 +172,7 @@ class UserServiceTest {
 
       // 実行・検証
       assertThatThrownBy(() -> userService.getUserDetail(999L))
-          .isInstanceOf(RuntimeException.class)
+          .isInstanceOf(ResponseStatusException.class)
           .hasMessage("ユーザーが見つかりません");
 
       // ユーザーが見つからなかった時点で処理が止まり、他の検索が実行されないことを検証
