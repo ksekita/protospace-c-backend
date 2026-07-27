@@ -54,9 +54,9 @@ public class UserService {
     }
 
     UserEntity user = new UserEntity();
-    user.setUsername(userDto.getUsername());
+    user.setName(userDto.getName());
     user.setEmail(userDto.getEmail());
-    user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
+    user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
     // ユーザー本体の登録（自動採番されたIDが user.getId() にセットされる）
     userRepository.insertUser(user);
@@ -77,7 +77,7 @@ public class UserService {
     return new UserResponseDto(
         token,
         userId,
-        user.getUsername(),
+        user.getName(),
         user.getEmail(),
         userDto.getPosition(),
         userDto.getAffiliation());

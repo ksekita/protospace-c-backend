@@ -43,7 +43,7 @@ class PrototypeServiceTest {
 
       UserEntity user = new UserEntity();
       user.setId(10L);
-      user.setUsername("テスト太郎");
+      user.setName("テスト太郎");
 
       when(prototypeRepository.findById(1L)).thenReturn(prototype);
       when(userRepository.selectById(10L)).thenReturn(user);
@@ -54,7 +54,7 @@ class PrototypeServiceTest {
       assertThat(result.getTitle()).isEqualTo("ProtoSpace");
       assertThat(result.getCatchCopy()).isEqualTo("開発事例共有ツール");
       assertThat(result.getUserId()).isEqualTo(10L);
-      assertThat(result.getUserName()).isEqualTo("テスト太郎");
+      assertThat(result.getName()).isEqualTo("テスト太郎");
     }
 
     @Test

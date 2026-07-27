@@ -11,7 +11,7 @@ import lombok.Data;
 public class UserDto {
   @NotBlank(message = "ユーザー名は必須です")
   @Size(max = 10, message = "ユーザー名は10文字以内で入力してください")
-  private String username;
+  private String name;
 
   @NotBlank(message = "メールアドレスは必須です")
   @Email(message = "メールアドレスの形式が正しくありません")

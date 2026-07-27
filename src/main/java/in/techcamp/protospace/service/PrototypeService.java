@@ -33,7 +33,7 @@ public class PrototypeService {
     }
 
     UserEntity user = userRepository.selectById(prototype.getUserId());
-    String userName = (user != null) ? user.getUsername() : null;
+    String userName = (user != null) ? user.getName() : null;
 
     return new PrototypeDetailResponseDto(
         prototype.getId(),
