@@ -98,6 +98,7 @@ public class PrototypeController {
             return ResponseEntity.badRequest().body(Map.of("error", "削除に失敗しました：" + e.getMessage()));
         }
     }
+    // ユーザーが作成したプロトタイプ一覧の取得
     @GetMapping("/users/{userId}")
   public ResponseEntity<List<UserPrototypeListDto>> getPrototypesByUserId(
       @PathVariable("userId") Long userId) {
