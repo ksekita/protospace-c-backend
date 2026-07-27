@@ -34,4 +34,7 @@ public interface PrototypeMapper {
 
   @Delete("DELETE FROM prototypes WHERE id = #{id}")
   void delete(Long id);
+
+  @Select("SELECT id, title, catch_copy AS catchCopy, concept, image, user_id AS userId FROM prototypes WHERE user_id = #{userId}")
+  List<PrototypeEntity> findByUserId(Long userId);
 }

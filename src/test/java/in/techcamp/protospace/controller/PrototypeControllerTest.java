@@ -125,4 +125,37 @@ public class PrototypeControllerTest {
           .andExpect(jsonPath("$.error").value("削除に失敗しました：他のユーザーの投稿を削除する権限がありません"));
     }
   }
+  @Nested
+  @DisplayName("特定ユーザーのプロトタイプ一覧取得API (GET /api/prototypes/users/{userId})")
+  class GetPrototypesByUserIdApiTest {
+
+    @Test
+    @DisplayName("【正常系】存在するユーザーIDを指定した場合、プロトタイプ一覧がJSONで返ること")
+    @WithMockUser
+    void getPrototypesByUserId_Success() throws Exception {
+      // 準備
+      Long userId = 1L;
+      
+      in.techcamp.protospace.dto.UserPrototypeListDto dto = new in.techcamp.protospace.dto.UserPrototypeListDto();
+      dto.setId(10L);
+      dto.setTitle("テストタイトル");
+      dto.setCatchCopy("テストキャッチコピー");
+      dto.setImage("test.png");
+
+      when(prototypeService.getPrototypesByUserId(userId)).thenReturn(List.of(dto));
+
+      // 実行・検証
+      mockMvc.perform(get("/api/prototypes/users/" + userId)
+              .header("Authorization", "Bearer " + token))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(1))
+          .andExpect(jsonPath("$[0].id").value(10))
+          .andExpect(jsonPath("$[0].title").value("テストタイトル"))
+          .andExpect(jsonPath("$[0].catchCopy").value("テストキャッチコピー"))
+          .andExpect(jsonPath("$[0].image").value("test.png"));
+
+      // サービスが正しく呼び出されたか検証
+      verify(prototypeService).getPrototypesByUserId(userId);
+    }
+  }
 }
