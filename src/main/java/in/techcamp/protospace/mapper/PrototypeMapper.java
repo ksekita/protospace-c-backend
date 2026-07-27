@@ -7,14 +7,17 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 
+// prototypeテーブルを操作するインターフェース
 @Mapper
 public interface PrototypeMapper {
-  // 新規投稿によるデータベースの追加
+
+  // 新規投稿による記事の追加
   @Insert(
       "INSERT INTO prototypes (title, catch_copy, concept, image, user_id) VALUES (#{title}, #{catchCopy}, #{concept}, #{image}, #{userId})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void insert(PrototypeEntity prototype);
 
+  // 全件一覧の取得
   @Select("SELECT * FROM prototypes")
   List<PrototypeEntity> findAll();
 
