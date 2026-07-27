@@ -9,7 +9,7 @@ import lombok.Data;
 public class UserResponseDto {
   private String token;
   private Long id;
-  private String username;
+  private String name;
   private String email;
   private String position;
   private String affiliation;

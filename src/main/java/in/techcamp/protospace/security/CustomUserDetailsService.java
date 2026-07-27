@@ -25,6 +25,6 @@ public class CustomUserDetailsService implements UserDetailsService {
     if (user == null) {
       throw new UsernameNotFoundException("ユーザーが見つかりません: " + email);
     }
-    return new User(user.getEmail(), user.getPasswordHash(), Collections.emptyList());
+    return new User(user.getEmail(), user.getPassword(), Collections.emptyList());
   }
 }

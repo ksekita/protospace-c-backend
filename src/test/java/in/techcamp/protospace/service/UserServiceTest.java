@@ -48,7 +48,7 @@ class UserServiceTest {
   @BeforeEach
   void setUp() {
     validUserDto = new UserDto();
-    validUserDto.setUsername("テストユーザー");
+    validUserDto.setName("テストユーザー");
     validUserDto.setEmail("test@example.com");
     validUserDto.setPassword("Password123456!");
     validUserDto.setPasswordConfirm("Password123456!");
@@ -80,7 +80,7 @@ class UserServiceTest {
       assertThat(response).isNotNull();
       assertThat(response.getToken()).isEqualTo("mock-jwt-token");
       assertThat(response.getId()).isEqualTo(10L);
-      assertThat(response.getUsername()).isEqualTo("テストユーザー");
+      assertThat(response.getName()).isEqualTo("テストユーザー");
       assertThat(response.getEmail()).isEqualTo("test@example.com");
       assertThat(response.getPosition()).isEqualTo("リーダー");
       assertThat(response.getAffiliation()).isEqualTo("エンジニア");
@@ -88,9 +88,9 @@ class UserServiceTest {
       // ArgumentCaptor で Entity に詰め替えられた値とパスワードハッシュ化を正確に検証
       verify(userRepository).insertUser(userEntityCaptor.capture());
       UserEntity capturedEntity = userEntityCaptor.getValue();
-      assertThat(capturedEntity.getUsername()).isEqualTo("テストユーザー");
+      assertThat(capturedEntity.getName()).isEqualTo("テストユーザー");
       assertThat(capturedEntity.getEmail()).isEqualTo("test@example.com");
-      assertThat(capturedEntity.getPasswordHash()).isEqualTo("hashedPassword123");
+      assertThat(capturedEntity.getPassword()).isEqualTo("hashedPassword123");
 
       // 役職・職業がそれぞれ1回ずつ登録されたか検証
       verify(positionRepository).insert(10L, "リーダー");
@@ -146,7 +146,7 @@ class UserServiceTest {
       // 準備
       UserEntity mockUser = new UserEntity();
       mockUser.setId(1L);
-      mockUser.setUsername("テスト太郎");
+      mockUser.setName("テスト太郎");
       mockUser.setEmail("test@example.com");
 
       when(userRepository.selectById(1L)).thenReturn(mockUser);

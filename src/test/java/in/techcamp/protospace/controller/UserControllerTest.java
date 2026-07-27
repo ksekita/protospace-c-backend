@@ -87,7 +87,7 @@ class UserControllerTest {
           .andExpect(status().isCreated())
           .andExpect(jsonPath("$.token").value("mock-jwt-token"))
           .andExpect(jsonPath("$.id").value(1))
-          .andExpect(jsonPath("$.username").value("テスト太郎"))
+          .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.email").value("test@example.com"))
           .andExpect(jsonPath("$.position").value("リーダー"))
           .andExpect(jsonPath("$.affiliation").value("エンジニア"));
@@ -162,7 +162,7 @@ class UserControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.token").value("dummy.jwt.token"))
           .andExpect(jsonPath("$.id").value(1L))
-          .andExpect(jsonPath("$.username").value("テスト太郎"))
+          .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.position").value("マネージャー"))
           .andExpect(jsonPath("$.affiliation").value("エンジニア"));
 
@@ -195,7 +195,7 @@ class UserControllerTest {
 
   private UserDto createValidUserDto() {
     UserDto dto = new UserDto();
-    dto.setUsername("テスト太郎");
+    dto.setName("テスト太郎");
     dto.setEmail("test@example.com");
     dto.setPassword("ValidPassword123!");
     dto.setPasswordConfirm("ValidPassword123!");
