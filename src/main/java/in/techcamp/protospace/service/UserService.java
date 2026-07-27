@@ -1,11 +1,6 @@
 package in.techcamp.protospace.service;
 
-
-import java.util.List;
-import java.util.Map;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import in.techcamp.protospace.dto.UserDetailResponseDto;
 import in.techcamp.protospace.dto.UserDto;
 import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
@@ -14,6 +9,14 @@ import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import in.techcamp.protospace.security.JwtTokenProvider;
+import java.util.List;
+import java.util.Map;
+import org.springframework.http.HttpStatus;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -24,7 +27,12 @@ public class UserService {
   private final AffiliationRepository affiliationRepository;
   private final JwtTokenProvider jwtTokenProvider;
 
-  public UserService(UserRepository userRepository, PositionRepository positionRepository, AffiliationRepository affiliationRepository, PasswordEncoder passwordEncoder,JwtTokenProvider jwtTokenProvider) {
+  public UserService(
+      UserRepository userRepository,
+      PositionRepository positionRepository,
+      AffiliationRepository affiliationRepository,
+      PasswordEncoder passwordEncoder,
+      JwtTokenProvider jwtTokenProvider) {
     this.userRepository = userRepository;
     this.positionRepository = positionRepository;
     this.affiliationRepository = affiliationRepository;
@@ -38,7 +46,7 @@ public class UserService {
   }
 
   // ユーザー新規登録
-  @Transactional 
+  @Transactional
   public UserResponseDto insertUser(UserDto userDto) {
     if (!userDto.getPassword().equals(userDto.getPasswordConfirm())) {
       throw new ValidationException(
@@ -46,14 +54,13 @@ public class UserService {
     }
 
     if (userRepository.existsByEmail(userDto.getEmail())) {
-      throw new ValidationException(
-          Map.of("email", List.of("このメールアドレスは既に登録されています。")), "登録エラー");
+      throw new ValidationException(Map.of("email", List.of("このメールアドレスは既に登録されています。")), "登録エラー");
     }
 
     UserEntity user = new UserEntity();
-    user.setUsername(userDto.getUsername());
+    user.setName(userDto.getName());
     user.setEmail(userDto.getEmail());
-    user.setPasswordHash(passwordEncoder.encode(userDto.getPassword()));
+    user.setPassword(passwordEncoder.encode(userDto.getPassword()));
 
     // ユーザー本体の登録（自動採番されたIDが user.getId() にセットされる）
     userRepository.insertUser(user);
@@ -69,16 +76,35 @@ public class UserService {
       affiliationRepository.insert(userId, userDto.getAffiliation());
     }
 
-
     String token = jwtTokenProvider.generateToken(String.valueOf(userId));
 
     return new UserResponseDto(
         token,
         userId,
-        user.getUsername(),
+        user.getName(),
         user.getEmail(),
         userDto.getPosition(),
-        userDto.getAffiliation()
-    );
+        userDto.getAffiliation());
   }
+  public UserDetailResponseDto getUserDetail(Long userId) {
+        // 1. ユーザー基本情報の取得
+        UserEntity user = userRepository.selectById(userId);
+        if (user == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ユーザーが見つかりません");
+        }
+
+        // 2. 役職と所属の取得
+        String position = positionRepository.findByUserId(userId);
+        String affiliation = affiliationRepository.findByUserId(userId);
+
+        // 3. DTOに詰めて返す
+        UserDetailResponseDto response = new UserDetailResponseDto();
+        response.setId(user.getId());
+        response.setUsername(user.getName());
+        response.setEmail(user.getEmail());
+        response.setPosition(position);
+        response.setAffiliation(affiliation);
+
+        return response;
+    }
 }

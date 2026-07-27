@@ -3,7 +3,7 @@ package in.techcamp.protospace.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-//ログインしたいユーザーのメールアドレスとパスワードのJSONデータをJavaオブジェクトとして受け取る
+// ログインしたいユーザーのメールアドレスとパスワードのJSONデータをJavaオブジェクトとして受け取る
 @Data
 public class LoginRequestDto {
   @NotBlank(message = "メールアドレスは必須です")

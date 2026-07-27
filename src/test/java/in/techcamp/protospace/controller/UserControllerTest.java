@@ -74,13 +74,7 @@ class UserControllerTest {
       UserDto dto = createValidUserDto();
 
       UserResponseDto mockResponse =
-          new UserResponseDto(
-              "mock-jwt-token",
-              1L,
-              "テスト太郎",
-              "test@example.com",
-              "リーダー",
-              "エンジニア");
+          new UserResponseDto("mock-jwt-token", 1L, "テスト太郎", "test@example.com", "リーダー", "エンジニア");
 
       when(userService.insertUser(any(UserDto.class))).thenReturn(mockResponse);
 
@@ -93,7 +87,7 @@ class UserControllerTest {
           .andExpect(status().isCreated())
           .andExpect(jsonPath("$.token").value("mock-jwt-token"))
           .andExpect(jsonPath("$.id").value(1))
-          .andExpect(jsonPath("$.username").value("テスト太郎"))
+          .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.email").value("test@example.com"))
           .andExpect(jsonPath("$.position").value("リーダー"))
           .andExpect(jsonPath("$.affiliation").value("エンジニア"));
@@ -117,7 +111,6 @@ class UserControllerTest {
               post("/api/auth/register")
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(objectMapper.writeValueAsString(dto)))
-                
           .andExpect(status().is(422));
     }
 
@@ -157,12 +150,7 @@ class UserControllerTest {
 
       LoginResponseDto response =
           new LoginResponseDto(
-              "dummy.jwt.token",
-              1L,
-              "test@example.com",
-              "テスト太郎",
-              "マネージャー",
-              "エンジニア");
+              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 
@@ -174,7 +162,7 @@ class UserControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.token").value("dummy.jwt.token"))
           .andExpect(jsonPath("$.id").value(1L))
-          .andExpect(jsonPath("$.username").value("テスト太郎"))
+          .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.position").value("マネージャー"))
           .andExpect(jsonPath("$.affiliation").value("エンジニア"));
 
@@ -207,7 +195,7 @@ class UserControllerTest {
 
   private UserDto createValidUserDto() {
     UserDto dto = new UserDto();
-    dto.setUsername("テスト太郎");
+    dto.setName("テスト太郎");
     dto.setEmail("test@example.com");
     dto.setPassword("ValidPassword123!");
     dto.setPasswordConfirm("ValidPassword123!");

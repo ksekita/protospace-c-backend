@@ -1,4 +1,5 @@
 package in.techcamp.protospace.exception;
+
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -14,11 +15,12 @@ public class GlobalExceptionHandler {
 
   // @Valid によるアノテーションバリデーションエラー (@NotBlank, @Email等)をリストに格納
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ResponseEntity<Map<String, Object>> handleValidationExceptions(MethodArgumentNotValidException ex) {
+  public ResponseEntity<Map<String, Object>> handleValidationExceptions(
+      MethodArgumentNotValidException ex) {
     Map<String, String> errors = new HashMap<>();
-    ex.getBindingResult().getFieldErrors().forEach(error ->
-        errors.put(error.getField(), error.getDefaultMessage())
-    );
+    ex.getBindingResult()
+        .getFieldErrors()
+        .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
     Map<String, Object> body = new HashMap<>();
     body.put("message", "入力内容に不備があります");
@@ -29,7 +31,8 @@ public class GlobalExceptionHandler {
 
   // UserService 内でのビジネスロジックエラー (パスワード不一致・メール重複等)
   @ExceptionHandler(ValidationException.class)
-  public ResponseEntity<Map<String, Object>> handleCustomValidationException(ValidationException ex) {
+  public ResponseEntity<Map<String, Object>> handleCustomValidationException(
+      ValidationException ex) {
     Map<String, Object> body = new HashMap<>();
     body.put("message", ex.getMessage());
     body.put("errors", ex.getErrors());
@@ -39,12 +42,12 @@ public class GlobalExceptionHandler {
 
   // ログイン認証失敗エラー
   @ExceptionHandler(AuthenticationException.class)
-  public ResponseEntity<Map<String, String>> handleAuthenticationException(AuthenticationException ex) {
-    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(Map.of("message", ex.getMessage()));
+  public ResponseEntity<Map<String, String>> handleAuthenticationException(
+      AuthenticationException ex) {
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("message", ex.getMessage()));
   }
 
-  //サーバー側のエラー
+  // サーバー側のエラー
   @ExceptionHandler(Exception.class)
   public ResponseEntity<Map<String, String>> handleUnexpectedException(Exception ex) {
     log.error("【サーバーエラー】予期せぬ例外が発生しました", ex);

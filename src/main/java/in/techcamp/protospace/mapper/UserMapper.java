@@ -1,34 +1,35 @@
 package in.techcamp.protospace.mapper;
 
+import in.techcamp.protospace.entity.UserEntity;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import in.techcamp.protospace.entity.UserEntity;
 
-//Userテーブルを操作するインターフェース
+// Userテーブルを操作するインターフェース
 @Mapper
 public interface UserMapper {
 
-  //検索
+  // 検索
   @Select("SELECT * FROM users WHERE id = #{id}")
   UserEntity selectById(Long id);
 
-  //メアドが既にあるか確認
+  // メアドが既にあるか確認
   @Select("SELECT EXISTS(SELECT 1 FROM users WHERE email = #{email})")
   boolean existsByEmail(@Param("email") String email);
 
-  //メアドを検索
+  // メアドを検索
   @Select("SELECT * FROM users WHERE email = #{email}")
   UserEntity selectByEmail(String email);
 
-  //保存
-  @Insert("""
+  // 保存
+  @Insert(
+      """
       INSERT INTO users (
-        username, email, password_hash
+        name, email, password
       ) VALUES (
-        #{username}, #{email}, #{passwordHash}
+        #{name}, #{email}, #{password}
       )
       """)
   @Options(useGeneratedKeys = true, keyProperty = "id")
