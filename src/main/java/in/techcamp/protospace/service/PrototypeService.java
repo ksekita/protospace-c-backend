@@ -33,7 +33,7 @@ public class PrototypeService {
     }
 
     UserEntity user = userRepository.selectById(prototype.getUserId());
-    String userName = (user != null) ? user.getName() : null;
+    String name = (user != null) ? user.getName() : null;
 
     return new PrototypeDetailResponseDto(
         prototype.getId(),
@@ -42,7 +42,7 @@ public class PrototypeService {
         prototype.getConcept(),
         prototype.getImage(),
         prototype.getUserId(),
-        userName);
+        name);
   }
 
   public void createPrototype(PrototypeForm form, Long userId) throws Exception {
