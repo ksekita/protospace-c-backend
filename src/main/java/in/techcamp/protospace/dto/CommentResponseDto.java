@@ -12,5 +12,5 @@ public class CommentResponseDto {
   private String content;
   private Long userId;
   private Long prototypeId;
-  private String userName;
+  private String name;
 }
