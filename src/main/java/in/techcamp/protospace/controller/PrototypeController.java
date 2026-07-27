@@ -14,6 +14,7 @@ import in.techcamp.protospace.form.PrototypeForm;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 
 
@@ -78,6 +79,22 @@ public class PrototypeController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body(Map.of("error", "更新に失敗しました：" + e.getMessage()));
+        }
+    }
+  
+
+  @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, String>> deletePrototype(
+        @PathVariable("id") Long id,
+        Authentication authentication
+    ) {
+        try {
+            Long userId = Long.valueOf(authentication.getName());
+            prototypeService.deletePrototype(id, userId);
+            return ResponseEntity.ok(Map.of("message", "プロトタイプの削除に成功しました"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Map.of("error", "削除に失敗しました：" + e.getMessage()));
         }
     }
 }
