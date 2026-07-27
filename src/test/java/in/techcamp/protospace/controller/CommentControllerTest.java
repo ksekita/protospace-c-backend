@@ -76,7 +76,7 @@ class CommentControllerTest {
                   .contentType(MediaType.APPLICATION_JSON)
                   .content(objectMapper.writeValueAsString(request)))
           .andExpect(status().isCreated())
-          .andExpect(content().string("コメントを投稿しました。"));
+          .andExpect(jsonPath("$.message").value("コメントを投稿しました。"));
 
       verify(commentService).createComment(eq(1L), eq(10L), any(CommentRequestDto.class));
     }
