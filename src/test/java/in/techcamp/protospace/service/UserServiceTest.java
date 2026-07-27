@@ -146,7 +146,7 @@ class UserServiceTest {
       // 準備
       UserEntity mockUser = new UserEntity();
       mockUser.setId(1L);
-      mockUser.setUsername("テスト太郎");
+      mockUser.setName("テスト太郎");
       mockUser.setEmail("test@example.com");
 
       when(userRepository.selectById(1L)).thenReturn(mockUser);
