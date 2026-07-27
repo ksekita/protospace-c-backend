@@ -1,6 +1,7 @@
 package in.techcamp.protospace.controller;
 
 import java.util.List;
+import java.util.Map;
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
 import in.techcamp.protospace.service.PrototypeService;
 import in.techcamp.protospace.entity.PrototypeEntity;
@@ -13,6 +14,7 @@ import in.techcamp.protospace.form.PrototypeForm;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 
 
 @RestController
@@ -43,7 +45,7 @@ public class PrototypeController {
 
    // プロトタイプ投稿機能
     @PostMapping("/new")
-    ResponseEntity<String> createPrototype(
+    ResponseEntity<Map<String,String>> createPrototype(
         @ModelAttribute PrototypeForm form,
         Authentication authentication
     ){
@@ -52,17 +54,17 @@ public class PrototypeController {
 
       prototypeService.createPrototype(form, userId);
 
-      return ResponseEntity.ok("プロトタイプの投稿に成功しました。");
+      return ResponseEntity.ok(Map.of("message", "プロトタイプの投稿に成功しました。")); 
 
     } catch (Exception e) {
       e.printStackTrace();
-      return ResponseEntity.status(500).body("エラーが発生しました: " + e.getMessage());
+      return ResponseEntity.status(500).body(Map.of("error", "エラーが発生しました: " + e.getMessage()));
     }
     }
 
-    @PostMapping("/{id}/update")
-    public ResponseEntity<String> updatePrototype(
-        @PathVariable Long id,
+    @PutMapping("/{id}")
+    public ResponseEntity<Map<String,String>> updatePrototype(
+        @PathVariable("id") Long id,
         @ModelAttribute PrototypeForm form,
         Authentication authentication
     ) {
@@ -72,10 +74,10 @@ public class PrototypeController {
             // サービス層に記述
             prototypeService.updatePrototype(id, form, userId);
 
-            return ResponseEntity.ok("プロトタイプの更新に成功しました");
+            return ResponseEntity.ok(Map.of("message","プロトタイプの更新に成功しました"));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("更新に失敗しました：" + e.getMessage());
+            return ResponseEntity.badRequest().body(Map.of("error", "更新に失敗しました：" + e.getMessage()));
         }
     }
 }
