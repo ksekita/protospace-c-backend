@@ -142,7 +142,7 @@ public class PrototypeService {
       throw new IllegalArgumentException("指定されたプロトタイプが見つかりません");
     }
     if (!existingPrototype.getUserId().equals(userId)) {
-      throw new Exception("他のユーザーの投稿を削除する権限がありません");
+      throw new SecurityException("他のユーザーの投稿を削除する権限がありません");
     }
     String savedFileName = existingPrototype.getImage();
     if (savedFileName != null && !savedFileName.isEmpty()) {
