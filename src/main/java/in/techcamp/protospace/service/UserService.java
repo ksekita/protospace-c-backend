@@ -60,6 +60,7 @@ public class UserService {
     user.setName(userDto.getName());
     user.setEmail(userDto.getEmail());
     user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    user.setProfile(userDto.getProfile());
 
     // ユーザー本体の登録（自動採番されたIDが user.getId() にセットされる）
     userRepository.insertUser(user);
@@ -83,7 +84,8 @@ public class UserService {
         user.getName(),
         user.getEmail(),
         userDto.getPosition(),
-        userDto.getAffiliation());
+        userDto.getAffiliation(),
+        userDto.getProfile());
   }
 
   public UserDetailResponseDto getUserDetail(Long userId) {
@@ -101,7 +103,7 @@ public class UserService {
     UserDetailResponseDto response = new UserDetailResponseDto();
     response.setId(user.getId());
     response.setName(user.getName());
-    response.setEmail(user.getEmail());
+    response.setProfile(user.getProfile());
     response.setPosition(position);
     response.setAffiliation(affiliation);
 

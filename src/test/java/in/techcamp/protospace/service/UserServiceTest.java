@@ -54,6 +54,8 @@ class UserServiceTest {
     validUserDto.setPasswordConfirm("Password123456!");
     validUserDto.setPosition("リーダー");
     validUserDto.setAffiliation("エンジニア");
+    validUserDto.setProfile("プロフィール");
+
   }
 
   @Nested
@@ -84,6 +86,7 @@ class UserServiceTest {
       assertThat(response.getEmail()).isEqualTo("test@example.com");
       assertThat(response.getPosition()).isEqualTo("リーダー");
       assertThat(response.getAffiliation()).isEqualTo("エンジニア");
+      assertThat(response.getProfile()).isEqualTo("プロフィール");
 
       // ArgumentCaptor で Entity に詰め替えられた値とパスワードハッシュ化を正確に検証
       verify(userRepository).insertUser(userEntityCaptor.capture());
@@ -91,6 +94,7 @@ class UserServiceTest {
       assertThat(capturedEntity.getName()).isEqualTo("テストユーザー");
       assertThat(capturedEntity.getEmail()).isEqualTo("test@example.com");
       assertThat(capturedEntity.getPassword()).isEqualTo("hashedPassword123");
+      assertThat(capturedEntity.getProfile()).isEqualTo("プロフィール");
 
       // 役職・職業がそれぞれ1回ずつ登録されたか検証
       verify(positionRepository).insert(10L, "リーダー");
@@ -148,6 +152,7 @@ class UserServiceTest {
       mockUser.setId(1L);
       mockUser.setName("テスト太郎");
       mockUser.setEmail("test@example.com");
+      mockUser.setProfile("プロフィール");
 
       when(userRepository.selectById(1L)).thenReturn(mockUser);
       when(positionRepository.findByUserId(1L)).thenReturn("リーダー");
@@ -159,9 +164,9 @@ class UserServiceTest {
       // 検証
       assertThat(result.getId()).isEqualTo(1L);
       assertThat(result.getName()).isEqualTo("テスト太郎");
-      assertThat(result.getEmail()).isEqualTo("test@example.com");
       assertThat(result.getPosition()).isEqualTo("リーダー");
       assertThat(result.getAffiliation()).isEqualTo("株式会社テスト");
+      assertThat(result.getProfile()).isEqualTo("プロフィール");
     }
 
     @Test

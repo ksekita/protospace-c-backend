@@ -35,9 +35,9 @@ class UserDetailControllerTest {
       UserDetailResponseDto mockResponse = new UserDetailResponseDto();
       mockResponse.setId(1L);
       mockResponse.setName("テスト太郎");
-      mockResponse.setEmail("test@example.com");
       mockResponse.setPosition("リーダー");
       mockResponse.setAffiliation("株式会社テスト");
+      mockResponse.setProfile("プロフィール");
 
       when(userService.getUserDetail(1L)).thenReturn(mockResponse);
 
@@ -47,9 +47,9 @@ class UserDetailControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(1))
           .andExpect(jsonPath("$.name").value("テスト太郎"))
-          .andExpect(jsonPath("$.email").value("test@example.com"))
           .andExpect(jsonPath("$.position").value("リーダー"))
-          .andExpect(jsonPath("$.affiliation").value("株式会社テスト"));
+          .andExpect(jsonPath("$.affiliation").value("株式会社テスト"))
+          .andExpect(jsonPath("$.profile").value("プロフィール"));
     }
   }
 }
