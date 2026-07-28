@@ -152,7 +152,7 @@ class UserControllerTest {
 
       LoginResponseDto response =
           new LoginResponseDto(
-              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア");
+              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア","プロフィール");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 
@@ -166,7 +166,8 @@ class UserControllerTest {
           .andExpect(jsonPath("$.id").value(1L))
           .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.position").value("マネージャー"))
-          .andExpect(jsonPath("$.affiliation").value("エンジニア"));
+          .andExpect(jsonPath("$.affiliation").value("エンジニア"))
+          .andExpect(jsonPath("$.profile").value("プロフィール"));
 
       // ArgumentCaptor で AuthService に渡されたリクエスト DTO を検証
       verify(authService).login(loginRequestDtoCaptor.capture());
