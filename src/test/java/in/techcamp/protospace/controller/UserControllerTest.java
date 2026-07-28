@@ -152,7 +152,7 @@ class UserControllerTest {
 
       LoginResponseDto response =
           new LoginResponseDto(
-              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア");
+              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア","プロフィール");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 

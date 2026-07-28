@@ -57,6 +57,6 @@ public class AuthService {
 
     // トークンやユーザー基本情報などをまとめたDtoを作成し、返す。
     return new LoginResponseDto(
-        token, user.getId(), user.getEmail(), user.getName(), position, affiliation);
+        token, user.getId(), user.getEmail(), user.getName(), position, affiliation,user.getProfile());
   }
 }

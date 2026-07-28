@@ -14,4 +14,5 @@ public class LoginResponseDto {
   private String name;
   private String position;
   private String affiliation;
+  private String profile;
 }
