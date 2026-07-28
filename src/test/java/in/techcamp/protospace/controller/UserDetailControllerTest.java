@@ -35,10 +35,9 @@ class UserDetailControllerTest {
       UserDetailResponseDto mockResponse = new UserDetailResponseDto();
       mockResponse.setId(1L);
       mockResponse.setName("テスト太郎");
-      // ★ 修正: email ではなく profile をモックデータにセット
-      mockResponse.setProfile("プロフィールのテストです");
       mockResponse.setPosition("リーダー");
       mockResponse.setAffiliation("株式会社テスト");
+      mockResponse.setProfile("プロフィール");
 
       when(userService.getUserDetail(1L)).thenReturn(mockResponse);
 
@@ -48,10 +47,9 @@ class UserDetailControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.id").value(1))
           .andExpect(jsonPath("$.name").value("テスト太郎"))
-          // ★ 修正: jsonPath の検証も profile に変更
-          .andExpect(jsonPath("$.profile").value("プロフィールのテストです"))
           .andExpect(jsonPath("$.position").value("リーダー"))
-          .andExpect(jsonPath("$.affiliation").value("株式会社テスト"));
+          .andExpect(jsonPath("$.affiliation").value("株式会社テスト"))
+          .andExpect(jsonPath("$.profile").value("プロフィール"));
     }
   }
 }

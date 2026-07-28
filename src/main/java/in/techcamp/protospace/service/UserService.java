@@ -60,8 +60,6 @@ public class UserService {
     user.setName(userDto.getName());
     user.setEmail(userDto.getEmail());
     user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
-    // プロフィール情報も登録するように追加（新規登録時に送られてくる場合）
     user.setProfile(userDto.getProfile());
 
     // ユーザー本体の登録（自動採番されたIDが user.getId() にセットされる）
@@ -105,7 +103,6 @@ public class UserService {
     UserDetailResponseDto response = new UserDetailResponseDto();
     response.setId(user.getId());
     response.setName(user.getName());
-    // ★ 修正: getEmail() ではなく getProfile() をセットする
     response.setProfile(user.getProfile());
     response.setPosition(position);
     response.setAffiliation(affiliation);
