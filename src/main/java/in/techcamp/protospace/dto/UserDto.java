@@ -29,4 +29,8 @@ public class UserDto {
 
   @NotBlank(message = "所属は必須です")
   private String affiliation;
+
+  @NotBlank(message = "プロフィールは必須です")
+  private String profile;
+  
 }

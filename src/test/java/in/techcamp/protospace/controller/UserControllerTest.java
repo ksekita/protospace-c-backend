@@ -74,7 +74,7 @@ class UserControllerTest {
       UserDto dto = createValidUserDto();
 
       UserResponseDto mockResponse =
-          new UserResponseDto("mock-jwt-token", 1L, "テスト太郎", "test@example.com", "リーダー", "エンジニア");
+          new UserResponseDto("mock-jwt-token", 1L, "テスト太郎", "test@example.com", "リーダー", "エンジニア","プロフィール");
 
       when(userService.insertUser(any(UserDto.class))).thenReturn(mockResponse);
 
@@ -90,7 +90,8 @@ class UserControllerTest {
           .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.email").value("test@example.com"))
           .andExpect(jsonPath("$.position").value("リーダー"))
-          .andExpect(jsonPath("$.affiliation").value("エンジニア"));
+          .andExpect(jsonPath("$.affiliation").value("エンジニア"))
+          .andExpect(jsonPath("$.profile").value("プロフィール"));
 
       // ArgumentCaptor で Service に渡されたリクエスト引数を検証
       verify(userService).insertUser(userDtoCaptor.capture());
@@ -98,6 +99,7 @@ class UserControllerTest {
       assertThat(capturedDto.getEmail()).isEqualTo("test@example.com");
       assertThat(capturedDto.getPosition()).isEqualTo("リーダー");
       assertThat(capturedDto.getAffiliation()).isEqualTo("エンジニア");
+       assertThat(capturedDto.getProfile()).isEqualTo("プロフィール");
     }
 
     @Test
@@ -201,6 +203,7 @@ class UserControllerTest {
     dto.setPasswordConfirm("ValidPassword123!");
     dto.setPosition("リーダー");
     dto.setAffiliation("エンジニア");
+    dto.setProfile("プロフィール");
     return dto;
   }
 }

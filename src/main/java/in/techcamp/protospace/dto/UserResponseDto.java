@@ -13,4 +13,5 @@ public class UserResponseDto {
   private String email;
   private String position;
   private String affiliation;
+  private String profile;
 }
