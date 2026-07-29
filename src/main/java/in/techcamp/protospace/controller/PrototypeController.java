@@ -29,7 +29,7 @@ public class PrototypeController {
   }
 
   // プロトタイプ一覧取得機能
-  @GetMapping("/")
+  @GetMapping({"/",""})
   public ResponseEntity<List<PrototypeEntity>> getAllPrototypes() {
     List<PrototypeEntity> prototypes = prototypeService.getAllPrototypes();
     return ResponseEntity.ok(prototypes);
