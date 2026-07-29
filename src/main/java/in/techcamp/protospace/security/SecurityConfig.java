@@ -48,7 +48,7 @@ public class SecurityConfig {
                         "/api/users/**",
                         "/api/prototypes/*/comments")
                     .permitAll()
-                    .requestMatchers("/api/auth/**", "/images/**", "/error", "/h2-console/**")
+                    .requestMatchers("/api/auth/**", "/images/**","/uploads/**", "/error", "/h2-console/**")
                     .permitAll()
                     .anyRequest()
                     .authenticated());
