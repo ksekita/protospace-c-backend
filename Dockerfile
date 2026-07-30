@@ -15,6 +15,8 @@ RUN ./gradlew dependencies --no-daemon || true
 COPY src src
 RUN ./gradlew build -x test -x spotlessCheck --no-daemon
 
+RUN mkdir -p /app/uploads && chmod 777 /app/uploads
+
 # -plain.jar 以外を app.jar として特定・コピー
 RUN find build/libs -name "*.jar" -not -name "*-plain.jar" -exec cp {} app.jar \;
 
