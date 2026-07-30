@@ -2,6 +2,7 @@ package in.techcamp.protospace.service;
 
 import in.techcamp.protospace.dto.UserDetailResponseDto;
 import in.techcamp.protospace.dto.UserDto;
+import in.techcamp.protospace.dto.UserInfoDto;
 import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ValidationException;
@@ -86,25 +87,36 @@ public class UserService {
         userDto.getPosition(),
         userDto.getAffiliation());
   }
+
   public UserDetailResponseDto getUserDetail(Long userId) {
-        // 1. ユーザー基本情報の取得
-        UserEntity user = userRepository.selectById(userId);
-        if (user == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ユーザーが見つかりません");
-        }
-
-        // 2. 役職と所属の取得
-        String position = positionRepository.findByUserId(userId);
-        String affiliation = affiliationRepository.findByUserId(userId);
-
-        // 3. DTOに詰めて返す
-        UserDetailResponseDto response = new UserDetailResponseDto();
-        response.setId(user.getId());
-        response.setUsername(user.getName());
-        response.setEmail(user.getEmail());
-        response.setPosition(position);
-        response.setAffiliation(affiliation);
-
-        return response;
+    // 1. ユーザー基本情報の取得
+    UserEntity user = userRepository.selectById(userId);
+    if (user == null) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ユーザーが見つかりません");
     }
+
+    // 2. 役職と所属の取得
+    String position = positionRepository.findByUserId(userId);
+    String affiliation = affiliationRepository.findByUserId(userId);
+
+    // 3. DTOに詰めて返す
+    UserDetailResponseDto response = new UserDetailResponseDto();
+    response.setId(user.getId());
+    response.setUsername(user.getName());
+    response.setEmail(user.getEmail());
+    response.setPosition(position);
+    response.setAffiliation(affiliation);
+
+    return response;
+  }
+
+  public UserInfoDto getUserInfo(Long userId) {
+    UserEntity user = userRepository.selectById(userId);
+
+    UserInfoDto dto = new UserInfoDto();
+    dto.setId(userId);
+    dto.setName(user.getName());
+
+    return dto;
+  }
 }

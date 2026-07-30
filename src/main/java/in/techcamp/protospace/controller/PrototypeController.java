@@ -49,6 +49,8 @@ public class PrototypeController {
         @ModelAttribute PrototypeForm form,
         Authentication authentication
     ){
+      System.out.println("投稿処理開始 =====================================--");
+      System.out.println("送信データ : "+ form);
     try {
       Long userId = Long.valueOf(authentication.getName());
 
