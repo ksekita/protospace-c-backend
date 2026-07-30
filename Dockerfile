@@ -1,3 +1,4 @@
+# ---- 1段階目（ビルド用） ----
 FROM eclipse-temurin:21-jdk-jammy AS builder
 WORKDIR /app
 
@@ -15,11 +16,10 @@ RUN ./gradlew dependencies --no-daemon || true
 COPY src src
 RUN ./gradlew build -x test -x spotlessCheck --no-daemon
 
-RUN mkdir -p /app/uploads && chmod 777 /app/uploads
-
 # -plain.jar 以外を app.jar として特定・コピー
 RUN find build/libs -name "*.jar" -not -name "*-plain.jar" -exec cp {} app.jar \;
 
+# ---- 2段階目（実行用） ----
 FROM eclipse-temurin:21-jre-jammy
 WORKDIR /app
 
@@ -28,9 +28,13 @@ ENV TZ=Asia/Tokyo
 # ホームディレクトリを持たないシステムユーザーとして作成
 RUN useradd -r -s /bin/false appuser
 
+# 👇 ここが大正解の位置！最終環境にフォルダを作り、appuserに所有権を渡す
+RUN mkdir -p /app/uploads && chown appuser:appuser /app/uploads
+
 # COPY時に直接オーナーを変更してイメージサイズを削減
 COPY --chown=appuser:appuser --from=builder /app/app.jar app.jar
 
+# ユーザーを切り替え
 USER appuser
 
 EXPOSE 8080
