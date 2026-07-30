@@ -1,24 +1,25 @@
 package in.techcamp.protospace.factory;
 
-import in.techcamp.protospace.entity.PrototypeEntity;
+import in.techcamp.protospace.dto.PrototypeListDto;
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class PrototypeFactory {
 
-  public static PrototypeEntity createDummyEntity(Long id) {
-    PrototypeEntity entity = new PrototypeEntity();
-    entity.setId(id);
-    entity.setTitle("テストタイトル" + id);
-    entity.setCatchCopy("キャッチコピー" + id);
-    entity.setConcept("コンセプト" + id);
-    entity.setImage("image" + id + ".png");
-    entity.setUserId(id);
+  public static PrototypeListDto createDummyEntity(Long id) {
+    PrototypeListDto dto = new PrototypeListDto();
+    dto.setId(id);
+    dto.setTitle("テストタイトル" + id);
+    dto.setCatchCopy("キャッチコピー" + id);
+    dto.setImage("image" + id + ".png");
+    dto.setUserId(id);
+    dto.setName("name" + id);
 
-    return entity;
+
+    return dto;
   }
 
-  public static List<PrototypeEntity> createDummyList(int count) {
+  public static List<PrototypeListDto> createDummyList(int count) {
     return IntStream.rangeClosed(1, count).mapToObj(i -> createDummyEntity((long) i)).toList();
   }
 }

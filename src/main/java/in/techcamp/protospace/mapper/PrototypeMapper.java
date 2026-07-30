@@ -1,5 +1,6 @@
 package in.techcamp.protospace.mapper;
 
+import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
@@ -25,8 +26,8 @@ public interface PrototypeMapper {
   void insert(PrototypeEntity prototype);
 
   // 全件一覧の取得
-  @Select("SELECT * FROM prototypes")
-  List<PrototypeEntity> findAll();
+  @Select("SELECT p.id as id ,p.catch_copy,p.image,p.user_id,u.name FROM prototypes as p LEFT JOIN users as u ON p.user_id = u.id")
+  List<PrototypeListDto> findAll();
 
   // idを使用して検索
   @Select(

@@ -1,6 +1,7 @@
 package in.techcamp.protospace.service;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
@@ -48,8 +49,11 @@ public class PrototypeService {
   }
 
   // 記事一覧を取得
-  public List<PrototypeEntity> getAllPrototypes() {
-    return prototypeMapper.findAll();
+  public List<PrototypeListDto> getAllPrototypes() {
+  
+    List<PrototypeListDto> dto = prototypeMapper.findAll();
+
+    return dto;
   }
 
   // 記事新規作成
