@@ -24,9 +24,9 @@ public interface CommentMapper {
         SELECT
             c.id,
             c.content,
-            c.user_id AS userId,
-            c.prototype_id AS prototypeId,
-            u.username AS userName
+            c.user_id,
+            c.prototype_id,
+            u.name
         FROM comments c
         INNER JOIN users u ON c.user_id = u.id
         WHERE c.prototype_id = #{prototypeId}
