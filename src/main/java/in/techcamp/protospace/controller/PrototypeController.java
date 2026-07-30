@@ -61,7 +61,7 @@ public class PrototypeController {
     }
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/{id}/edit")
   public ResponseEntity<Map<String, String>> updatePrototype(
       @PathVariable("id") Long id,
       @ModelAttribute PrototypeForm form,
