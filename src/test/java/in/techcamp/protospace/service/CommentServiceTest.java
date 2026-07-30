@@ -36,8 +36,7 @@ class CommentServiceTest {
     @DisplayName("【正常系】記事IDに紐づくコメント一覧が取得できること")
     void getComments_Success() {
       // モックデータの準備
-      CommentResponseDto mockComment =
-          new CommentResponseDto(1L, "モックのための文章です。", 10L, 1L, "テスト太郎");
+      CommentResponseDto mockComment = new CommentResponseDto(1L, "モックのための文章です。", 10L, 1L, "テスト太郎");
       when(commentRepository.findByPrototypeId(1L)).thenReturn(List.of(mockComment));
 
       // テスト実行
@@ -46,7 +45,7 @@ class CommentServiceTest {
       // 検証
       assertThat(result).hasSize(1);
       assertThat(result.get(0).getContent()).isEqualTo("モックのための文章です。");
-      assertThat(result.get(0).getUserName()).isEqualTo("テスト太郎");
+      assertThat(result.get(0).getName()).isEqualTo("テスト太郎");
     }
   }
 
@@ -68,7 +67,8 @@ class CommentServiceTest {
       verify(commentRepository).insert(commentEntityCaptor.capture());
       CommentEntity capturedEntity = commentEntityCaptor.getValue();
 
-      assertThat(capturedEntity.getContent()).isEqualTo("コメント情報が正しくEntityに詰め替えられ、保存されることをテストするためのコメントです。");
+      assertThat(capturedEntity.getContent())
+          .isEqualTo("コメント情報が正しくEntityに詰め替えられ、保存されることをテストするためのコメントです。");
       assertThat(capturedEntity.getPrototypeId()).isEqualTo(1L);
       assertThat(capturedEntity.getUserId()).isEqualTo(10L);
     }

@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -41,7 +40,7 @@ class CommentControllerTest {
   @Nested
   @DisplayName("コメント一覧取得API (GET /api/prototypes/{prototypeId}/comments)")
   class GetCommentsTest {
-    
+
     @Test
     @DisplayName("【正常系】コメント一覧をJSONで取得できること (トークン不要)")
     void getComments_Success() throws Exception {
@@ -53,7 +52,7 @@ class CommentControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$[0].id").value(1))
           .andExpect(jsonPath("$[0].content").value("テストコメント"))
-          .andExpect(jsonPath("$[0].userName").value("テスト太郎"));
+          .andExpect(jsonPath("$[0].name").value("テスト太郎"));
     }
   }
 

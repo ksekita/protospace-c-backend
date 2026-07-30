@@ -13,7 +13,6 @@ import in.techcamp.protospace.security.JwtTokenProvider;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +61,7 @@ public class UserService {
     user.setName(userDto.getName());
     user.setEmail(userDto.getEmail());
     user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+    user.setProfile(userDto.getProfile());
 
     // ユーザー本体の登録（自動採番されたIDが user.getId() にセットされる）
     userRepository.insertUser(user);
@@ -85,25 +85,26 @@ public class UserService {
         user.getName(),
         user.getEmail(),
         userDto.getPosition(),
-        userDto.getAffiliation());
+        userDto.getAffiliation(),
+        userDto.getProfile());
   }
 
   public UserDetailResponseDto getUserDetail(Long userId) {
-    // 1. ユーザー基本情報の取得
+    // ユーザー基本情報の取得
     UserEntity user = userRepository.selectById(userId);
     if (user == null) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ユーザーが見つかりません");
     }
 
-    // 2. 役職と所属の取得
+    // 役職と所属の取得
     String position = positionRepository.findByUserId(userId);
     String affiliation = affiliationRepository.findByUserId(userId);
 
-    // 3. DTOに詰めて返す
+    // DTOに詰めて返す
     UserDetailResponseDto response = new UserDetailResponseDto();
     response.setId(user.getId());
-    response.setUsername(user.getName());
-    response.setEmail(user.getEmail());
+    response.setName(user.getName());
+    response.setProfile(user.getProfile());
     response.setPosition(position);
     response.setAffiliation(affiliation);
 

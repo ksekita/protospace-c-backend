@@ -14,12 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserDetailController {
 
-    private final UserService userService;
+  private final UserService userService;
 
-    // ユーザー詳細情報の取得 API
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDetailResponseDto> getUserDetail(@PathVariable("id") Long id) {
-        UserDetailResponseDto response = userService.getUserDetail(id);
-        return ResponseEntity.ok(response);
-    }
+  // ユーザー詳細情報の取得 API
+  @GetMapping("/{id}")
+  public ResponseEntity<UserDetailResponseDto> getUserDetail(@PathVariable("id") Long id) {
+    UserDetailResponseDto response = userService.getUserDetail(id);
+    return ResponseEntity.ok(response);
+  }
 }

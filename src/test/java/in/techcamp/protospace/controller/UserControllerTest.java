@@ -74,7 +74,7 @@ class UserControllerTest {
       UserDto dto = createValidUserDto();
 
       UserResponseDto mockResponse =
-          new UserResponseDto("mock-jwt-token", 1L, "テスト太郎", "test@example.com", "リーダー", "エンジニア");
+          new UserResponseDto("mock-jwt-token", 1L, "テスト太郎", "test@example.com", "リーダー", "エンジニア","プロフィール");
 
       when(userService.insertUser(any(UserDto.class))).thenReturn(mockResponse);
 
@@ -90,7 +90,8 @@ class UserControllerTest {
           .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.email").value("test@example.com"))
           .andExpect(jsonPath("$.position").value("リーダー"))
-          .andExpect(jsonPath("$.affiliation").value("エンジニア"));
+          .andExpect(jsonPath("$.affiliation").value("エンジニア"))
+          .andExpect(jsonPath("$.profile").value("プロフィール"));
 
       // ArgumentCaptor で Service に渡されたリクエスト引数を検証
       verify(userService).insertUser(userDtoCaptor.capture());
@@ -98,6 +99,7 @@ class UserControllerTest {
       assertThat(capturedDto.getEmail()).isEqualTo("test@example.com");
       assertThat(capturedDto.getPosition()).isEqualTo("リーダー");
       assertThat(capturedDto.getAffiliation()).isEqualTo("エンジニア");
+       assertThat(capturedDto.getProfile()).isEqualTo("プロフィール");
     }
 
     @Test
@@ -150,7 +152,7 @@ class UserControllerTest {
 
       LoginResponseDto response =
           new LoginResponseDto(
-              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア");
+              "dummy.jwt.token", 1L, "test@example.com", "テスト太郎", "マネージャー", "エンジニア","プロフィール");
 
       when(authService.login(any(LoginRequestDto.class))).thenReturn(response);
 
@@ -164,7 +166,8 @@ class UserControllerTest {
           .andExpect(jsonPath("$.id").value(1L))
           .andExpect(jsonPath("$.name").value("テスト太郎"))
           .andExpect(jsonPath("$.position").value("マネージャー"))
-          .andExpect(jsonPath("$.affiliation").value("エンジニア"));
+          .andExpect(jsonPath("$.affiliation").value("エンジニア"))
+          .andExpect(jsonPath("$.profile").value("プロフィール"));
 
       // ArgumentCaptor で AuthService に渡されたリクエスト DTO を検証
       verify(authService).login(loginRequestDtoCaptor.capture());
@@ -201,6 +204,7 @@ class UserControllerTest {
     dto.setPasswordConfirm("ValidPassword123!");
     dto.setPosition("リーダー");
     dto.setAffiliation("エンジニア");
+    dto.setProfile("プロフィール");
     return dto;
   }
 }
