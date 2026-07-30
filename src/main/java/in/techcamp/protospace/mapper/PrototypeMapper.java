@@ -26,7 +26,7 @@ public interface PrototypeMapper {
   void insert(PrototypeEntity prototype);
 
   // 全件一覧の取得
-  @Select("SELECT p.id as id ,p.catch_copy,p.image,p.user_id,u.name FROM prototypes as p LEFT JOIN users as u ON p.user_id = u.id")
+  @Select("SELECT p.id, p.title ,p.catch_copy,p.image,p.user_id,u.name FROM prototypes as p LEFT JOIN users as u ON p.user_id = u.id")
   List<PrototypeListDto> findAll();
 
   // idを使用して検索
