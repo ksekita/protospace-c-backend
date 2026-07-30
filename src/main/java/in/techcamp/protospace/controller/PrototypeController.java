@@ -1,6 +1,7 @@
 package in.techcamp.protospace.controller;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.form.PrototypeForm;
@@ -30,8 +31,8 @@ public class PrototypeController {
 
   // プロトタイプ一覧取得機能
   @GetMapping({"/",""})
-  public ResponseEntity<List<PrototypeEntity>> getAllPrototypes() {
-    List<PrototypeEntity> prototypes = prototypeService.getAllPrototypes();
+  public ResponseEntity<List<PrototypeListDto>> getAllPrototypes() {
+    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes();
     return ResponseEntity.ok(prototypes);
   }
 

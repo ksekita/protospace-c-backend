@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import in.techcamp.protospace.entity.PrototypeEntity;
+import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.factory.PrototypeFactory;
 import in.techcamp.protospace.security.JwtTokenProvider;
 import in.techcamp.protospace.service.PrototypeService;
@@ -77,7 +77,7 @@ public class PrototypeControllerTest {
   public void testGetAllPrototypes() throws Exception {
 
     // ダミー100個
-    List<PrototypeEntity> mockList = PrototypeFactory.createDummyList(100);
+    List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(100);
 
     // モック
     when(prototypeService.getAllPrototypes()).thenReturn(mockList);
