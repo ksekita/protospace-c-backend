@@ -26,7 +26,7 @@ public interface CommentMapper {
             c.content,
             c.user_id AS userId,
             c.prototype_id AS prototypeId,
-            u.username AS userName
+            u.name AS name
         FROM comments c
         INNER JOIN users u ON c.user_id = u.id
         WHERE c.prototype_id = #{prototypeId}
