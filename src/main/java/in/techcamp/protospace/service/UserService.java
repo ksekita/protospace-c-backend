@@ -2,6 +2,7 @@ package in.techcamp.protospace.service;
 
 import in.techcamp.protospace.dto.UserDetailResponseDto;
 import in.techcamp.protospace.dto.UserDto;
+import in.techcamp.protospace.dto.UserInfoDto;
 import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ValidationException;
@@ -108,5 +109,15 @@ public class UserService {
     response.setAffiliation(affiliation);
 
     return response;
+  }
+
+  public UserInfoDto getUserInfo(Long userId) {
+    UserEntity user = userRepository.selectById(userId);
+
+    UserInfoDto dto = new UserInfoDto();
+    dto.setId(userId);
+    dto.setName(user.getName());
+
+    return dto;
   }
 }
