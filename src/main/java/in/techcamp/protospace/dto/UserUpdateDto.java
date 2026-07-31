@@ -4,7 +4,9 @@ import in.techcamp.protospace.validation.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class UserUpdateDto {
   @NotBlank(message = "ユーザー名は必須です")
   @Size(max = 10, message = "ユーザー名は10文字以内で入力してください")
