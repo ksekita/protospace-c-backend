@@ -9,6 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.Param; 
 
 // prototypeテーブルを操作するインターフェース
 @Mapper
@@ -26,12 +27,12 @@ public interface PrototypeMapper {
   void insert(PrototypeEntity prototype);
 
   // 全件一覧の取得（新しい順に変更）
-  @Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name FROM prototypes p LEFT JOIN users u ON p.user_id = u.id ORDER BY p.id DESC")
-  List<PrototypeListDto> findAll();
+@Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name FROM prototypes p LEFT JOIN users u ON p.user_id = u.id ORDER BY p.id ${order}")
+  List<PrototypeListDto> findAll(@Param("order") String order);
 
   // キーワード検索による一覧取得（新しい順）
-  @Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name FROM prototypes p LEFT JOIN users u ON p.user_id = u.id WHERE p.title LIKE CONCAT('%', #{keyword}, '%') ORDER BY p.id DESC")
-  List<PrototypeListDto> findByKeyword(String keyword);
+@Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name FROM prototypes p LEFT JOIN users u ON p.user_id = u.id WHERE p.title LIKE CONCAT('%', #{keyword}, '%') ORDER BY p.id ${order}")
+  List<PrototypeListDto> findByKeyword(@Param("keyword") String keyword, @Param("order") String order);
 
   // idを使用して検索
   @Select(
@@ -41,7 +42,6 @@ public interface PrototypeMapper {
   @Delete("DELETE FROM prototypes WHERE id = #{id}")
   void delete(Long id);
 
-  @Select(
-      "SELECT id, title, catch_copy, concept, image, user_id FROM prototypes WHERE user_id = #{userId}")
-  List<PrototypeEntity> findByUserId(Long userId);
+@Select("SELECT id, title, catch_copy, concept, image, user_id FROM prototypes WHERE user_id = #{userId} ORDER BY id ${order}")
+  List<PrototypeEntity> findByUserId(@Param("userId") Long userId, @Param("order") String order);
 }

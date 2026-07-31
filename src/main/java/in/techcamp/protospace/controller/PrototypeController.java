@@ -32,10 +32,11 @@ public class PrototypeController {
   // プロトタイプ一覧取得機能兼検索機能
   @GetMapping({"/",""})
   public ResponseEntity<List<PrototypeListDto>> getAllPrototypes(
-      @RequestParam(name = "keyword", required = false) String keyword) {
+      @RequestParam(name = "keyword", required = false) String keyword,
+      @RequestParam(name = "sort", defaultValue = "latest") String sort) {
       
     // Serviceにkeywordを渡す
-    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes(keyword);
+    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes(keyword,sort);
     return ResponseEntity.ok(prototypes);
   }
 
@@ -64,6 +65,7 @@ public class PrototypeController {
     }
   }
 
+  //プロトタイプ編集機能
   @PutMapping("/{id}/edit")
   public ResponseEntity<Map<String, String>> updatePrototype(
       @PathVariable("id") Long id,
@@ -82,6 +84,7 @@ public class PrototypeController {
     }
   }
 
+  //プロトタイプ削除機能
   @DeleteMapping("/{id}")
   public ResponseEntity<Map<String, String>> deletePrototype(
       @PathVariable("id") Long id, Authentication authentication) {
@@ -98,8 +101,9 @@ public class PrototypeController {
   // ユーザーが作成したプロトタイプ一覧の取得
   @GetMapping("/users/{userId}")
   public ResponseEntity<List<UserPrototypeListDto>> getPrototypesByUserId(
-      @PathVariable("userId") Long userId) {
-    List<UserPrototypeListDto> response = prototypeService.getPrototypesByUserId(userId);
+      @PathVariable("userId") Long userId,
+      @RequestParam(name = "sort", defaultValue = "latest") String sort) {
+    List<UserPrototypeListDto> response = prototypeService.getPrototypesByUserId(userId,sort);
     return ResponseEntity.ok(response);
   }
 }
