@@ -21,4 +21,9 @@ public class PositionRepository {
   public String findByUserId(Long userId) {
     return positionMapper.findByUserId(userId);
   }
+
+  // 更新
+  public void update(Long userId, String position) {
+    positionMapper.update(userId, position);
+  }
 }

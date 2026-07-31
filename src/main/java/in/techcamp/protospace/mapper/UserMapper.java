@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.springframework.boot.security.autoconfigure.SecurityProperties.User;
 
 // Userテーブルを操作するインターフェース
 @Mapper
@@ -34,4 +36,7 @@ public interface UserMapper {
       """)
   @Options(useGeneratedKeys = true, keyProperty = "id")
   int insert(UserEntity user);
+
+  @Update("UPDATE users SET name = #{name}, email = #{email}, profile = #{profile}, password = #{password} WHERE id = #{id}")
+  int update(UserEntity user);
 }

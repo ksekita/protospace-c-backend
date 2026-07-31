@@ -4,7 +4,9 @@ import in.techcamp.protospace.dto.UserDetailResponseDto;
 import in.techcamp.protospace.dto.UserDto;
 import in.techcamp.protospace.dto.UserInfoDto;
 import in.techcamp.protospace.dto.UserResponseDto;
+import in.techcamp.protospace.dto.UserUpdateDto;
 import in.techcamp.protospace.entity.UserEntity;
+import in.techcamp.protospace.mapper.UserMapper;
 import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;
@@ -119,5 +121,56 @@ public class UserService {
     dto.setName(user.getName());
 
     return dto;
+  }
+
+  @Transactional
+  public String updateUser(Long userId, UserUpdateDto dto) {
+
+    // ユーザーの確認
+    UserEntity user = userRepository.selectById(userId);
+    if(user == null){
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ユーザーが見つかりません");
+    }
+
+    // 本人確認
+    if(!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+      throw new ValidationException(
+        Map.of("currentPassword", List.of("現在のパスワードが間違っています。")), "パスワードエラー");
+    }
+
+    // メールアドレスの重複チェック
+    if(!user.getEmail().equals(dto.getEmail())){
+      if(userRepository.existsByEmail(dto.getEmail())){
+      throw new ValidationException(
+        Map.of("email", List.of("このメールアドレスは既に登録されています。")), "メール重複エラー");
+    }
+  }
+
+  // usersテーブルの更新
+    user.setName(dto.getName());
+    user.setEmail(dto.getEmail());
+    user.setProfile(dto.getProfile());
+
+    // 新しいパスワードの入力がある場合のみ
+    if(dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+      user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+    }
+
+    userRepository.updateUser(user);
+
+    // positionとaffiliationの更新は別途記述
+    
+    if(dto.getPosition() != null) {
+      positionRepository.update(userId, dto.getPosition());
+    }
+
+    if(dto.getAffiliation() != null) {
+      affiliationRepository.update(userId, dto.getAffiliation());
+    }
+
+    return jwtTokenProvider.generateToken(String.valueOf(userId));
+
+
+
   }
 }
