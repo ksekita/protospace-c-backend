@@ -1,6 +1,6 @@
 package in.techcamp.protospace.form;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
 

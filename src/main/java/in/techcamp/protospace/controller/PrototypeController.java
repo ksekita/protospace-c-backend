@@ -3,7 +3,6 @@ package in.techcamp.protospace.controller;
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
-import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.form.PrototypeForm;
 import in.techcamp.protospace.service.PrototypeService;
 import java.util.List;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -29,10 +29,13 @@ public class PrototypeController {
     this.prototypeService = prototypeService;
   }
 
-  // プロトタイプ一覧取得機能
+  // プロトタイプ一覧取得機能兼検索機能
   @GetMapping({"/",""})
-  public ResponseEntity<List<PrototypeListDto>> getAllPrototypes() {
-    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes();
+  public ResponseEntity<List<PrototypeListDto>> getAllPrototypes(
+      @RequestParam(name = "keyword", required = false) String keyword) {
+      
+    // Serviceにkeywordを渡す
+    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes(keyword);
     return ResponseEntity.ok(prototypes);
   }
 

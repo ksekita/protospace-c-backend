@@ -48,12 +48,14 @@ public class PrototypeService {
         name);
   }
 
-  // 記事一覧を取得
-  public List<PrototypeListDto> getAllPrototypes() {
-  
-    List<PrototypeListDto> dto = prototypeMapper.findAll();
-
-    return dto;
+  // 記事一覧を取得し、検索に対応
+ public List<PrototypeListDto> getAllPrototypes(String keyword) {
+    // キーワードが空の場合は全件取得、ある場合は検索メソッドを呼ぶ
+    if (keyword == null || keyword.trim().isEmpty()) {
+      return prototypeMapper.findAll();
+    } else {
+      return prototypeMapper.findByKeyword(keyword.trim());
+    }
   }
 
   // 記事新規作成

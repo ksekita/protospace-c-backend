@@ -72,15 +72,15 @@ public class PrototypeControllerTest {
     verify(prototypeService).createPrototype(any(), eq(1L));
   }
 
-  @Test
+ @Test
   @WithMockUser
   public void testGetAllPrototypes() throws Exception {
 
     // ダミー100個
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(100);
 
-    // モック
-    when(prototypeService.getAllPrototypes()).thenReturn(mockList);
+    // モック（引数が null の場合の挙動を定義）
+    when(prototypeService.getAllPrototypes(null)).thenReturn(mockList);
 
     mockMvc
         .perform(get("/api/prototypes/").header("Authorization", "Bearer " + token))
@@ -89,7 +89,31 @@ public class PrototypeControllerTest {
         .andExpect(jsonPath("$[0].title").value("テストタイトル1"))
         .andExpect(jsonPath("$[99].title").value("テストタイトル100"));
 
-    verify(prototypeService).getAllPrototypes();
+    // 引数 null でサービスが呼ばれたか検証
+    verify(prototypeService).getAllPrototypes(null);
+  }
+
+  // キーワードあり（検索）の場合のテスト
+  @Test
+  @WithMockUser
+  public void testGetAllPrototypesWithKeyword() throws Exception {
+
+    // 検索結果としてダミーを2個返すように設定
+    List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(2);
+
+    // モック（引数に "テスト" が渡された場合の挙動を定義）
+    when(prototypeService.getAllPrototypes("テスト")).thenReturn(mockList);
+
+    // param("keyword", "テスト") でクエリパラメータを付与してリクエスト
+    mockMvc
+        .perform(get("/api/prototypes/")
+            .param("keyword", "テスト")
+            .header("Authorization", "Bearer " + token))
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.length()").value(2));
+
+    // 引数 "テスト" でサービスが呼ばれたか検証
+    verify(prototypeService).getAllPrototypes("テスト");
   }
 
   @Nested
