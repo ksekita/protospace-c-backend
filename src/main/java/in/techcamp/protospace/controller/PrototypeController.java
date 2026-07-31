@@ -66,6 +66,8 @@ public class PrototypeController {
       @PathVariable("id") Long id,
       @ModelAttribute PrototypeForm form,
       Authentication authentication) {
+
+System.out.println("================================="+form);
     try {
       // IDの取得
       Long userId = Long.valueOf(authentication.getName());
