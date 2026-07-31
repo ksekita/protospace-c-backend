@@ -25,9 +25,13 @@ public interface PrototypeMapper {
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void insert(PrototypeEntity prototype);
 
-  // 全件一覧の取得
-  @Select("SELECT p.id, p.title ,p.catch_copy,p.image,p.user_id,u.name FROM prototypes as p LEFT JOIN users as u ON p.user_id = u.id")
+  // 全件一覧の取得（新しい順に変更）
+  @Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name FROM prototypes p LEFT JOIN users u ON p.user_id = u.id ORDER BY p.id DESC")
   List<PrototypeListDto> findAll();
+
+  // キーワード検索による一覧取得（新しい順）
+  @Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name FROM prototypes p LEFT JOIN users u ON p.user_id = u.id WHERE p.title LIKE CONCAT('%', #{keyword}, '%') ORDER BY p.id DESC")
+  List<PrototypeListDto> findByKeyword(String keyword);
 
   // idを使用して検索
   @Select(
