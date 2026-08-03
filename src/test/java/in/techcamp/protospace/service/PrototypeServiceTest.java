@@ -163,6 +163,7 @@ class PrototypeServiceTest {
       assertThat(result).hasSize(2);
 
       assertThat(result.get(0).getId()).isEqualTo(10L);
+      assertThat(result.get(0).getName()).isEqualTo("テストユーザー");
       assertThat(result.get(0).getTitle()).isEqualTo("タイトル1");
       assertThat(result.get(0).getCatchCopy()).isEqualTo("キャッチコピー1");
       assertThat(result.get(0).getImage()).isEqualTo("image1.png");

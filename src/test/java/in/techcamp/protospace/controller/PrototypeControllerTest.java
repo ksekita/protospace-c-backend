@@ -165,6 +165,7 @@ public class PrototypeControllerTest {
       in.techcamp.protospace.dto.UserPrototypeListDto dto =
           new in.techcamp.protospace.dto.UserPrototypeListDto();
       dto.setId(10L);
+      dto.setName("テストユーザー");
       dto.setTitle("テストタイトル");
       dto.setCatchCopy("テストキャッチコピー");
       dto.setImage("test.png");
@@ -178,6 +179,7 @@ public class PrototypeControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(1))
           .andExpect(jsonPath("$[0].id").value(10))
+          .andExpect(jsonPath("$[0].name").value("テストユーザー"))
           .andExpect(jsonPath("$[0].title").value("テストタイトル"))
           .andExpect(jsonPath("$[0].catchCopy").value("テストキャッチコピー"))
           .andExpect(jsonPath("$[0].image").value("test.png"));

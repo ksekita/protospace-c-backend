@@ -169,6 +169,7 @@ public class PrototypeService {
             entity -> {
               UserPrototypeListDto dto = new UserPrototypeListDto();
               dto.setId(entity.getId());
+              dto.setName(entity.getName());
               dto.setTitle(entity.getTitle());
               dto.setCatchCopy(entity.getCatchCopy());
               dto.setImage(entity.getImage());
