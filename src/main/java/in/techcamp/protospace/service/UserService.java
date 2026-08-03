@@ -138,17 +138,8 @@ public class UserService {
         Map.of("currentPassword", List.of("現在のパスワードが間違っています。")), "パスワードエラー");
     }
 
-    // メールアドレスの重複チェック
-    if(!user.getEmail().equals(dto.getEmail())){
-      if(userRepository.existsByEmail(dto.getEmail())){
-      throw new ValidationException(
-        Map.of("email", List.of("このメールアドレスは既に登録されています。")), "メール重複エラー");
-    }
-  }
-
   // usersテーブルの更新
     user.setName(dto.getName());
-    user.setEmail(dto.getEmail());
     user.setProfile(dto.getProfile());
 
     // 新しいパスワードの入力がある場合のみ
