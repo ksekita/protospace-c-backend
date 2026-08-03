@@ -123,7 +123,6 @@ public class UserService {
     return dto;
   }
 
-  @Transactional
   public String updateUser(Long userId, UserUpdateDto dto) {
 
     // ユーザーの確認
