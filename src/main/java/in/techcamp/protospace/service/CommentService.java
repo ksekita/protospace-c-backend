@@ -30,4 +30,6 @@ public class CommentService {
 
     commentRepository.insert(comment);
   }
+
+  public void deleteComment(Long prototypeId,)
 }
