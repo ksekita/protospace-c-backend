@@ -21,4 +21,9 @@ public class AffiliationRepository {
   public String findByUserId(Long userId) {
     return affiliationMapper.findByUserId(userId);
   }
+
+  // 更新
+  public void update(Long userId, String affiliation) {
+    affiliationMapper.update(userId, affiliation);
+  }
 }
