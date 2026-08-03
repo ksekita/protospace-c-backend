@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class UserPrototypeListDto {
   private Long id;
+  private String name;
   private String title;
   private String catchCopy;
   private String image;
