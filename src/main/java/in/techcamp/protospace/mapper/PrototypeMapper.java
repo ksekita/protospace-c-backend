@@ -1,6 +1,7 @@
 package in.techcamp.protospace.mapper;
 
 import in.techcamp.protospace.dto.PrototypeListDto;
+import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import java.util.List;
 import org.apache.ibatis.annotations.Delete;
@@ -42,6 +43,7 @@ public interface PrototypeMapper {
   @Delete("DELETE FROM prototypes WHERE id = #{id}")
   void delete(Long id);
 
-@Select("SELECT id, title, catch_copy, concept, image, user_id FROM prototypes WHERE user_id = #{userId} ORDER BY id ${order}")
-  List<PrototypeEntity> findByUserId(@Param("userId") Long userId, @Param("order") String order);
+  @Select(
+      "SELECT p.id, u.name, p.title, p.catch_copy, p.image, p.user_id FROM prototypes p LEFT JOIN users u ON p.user_id = u.id WHERE user_id = #{userId}")
+  List<UserPrototypeListDto> findByUserId(Long userId);
 }
