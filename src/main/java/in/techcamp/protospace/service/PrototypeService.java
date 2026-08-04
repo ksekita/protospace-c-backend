@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -160,21 +159,8 @@ public class PrototypeService {
   }
 
   public List<UserPrototypeListDto> getPrototypesByUserId(Long userId) {
-    // Mapperを使ってデータベースから取得
-    List<PrototypeEntity> entities = prototypeMapper.findByUserId(userId);
 
-    // EntityのリストをDTOのリストに変換（詰め替え）
-    return entities.stream()
-        .map(
-            entity -> {
-              UserPrototypeListDto dto = new UserPrototypeListDto();
-              dto.setId(entity.getId());
-              dto.setName(entity.getName());
-              dto.setTitle(entity.getTitle());
-              dto.setCatchCopy(entity.getCatchCopy());
-              dto.setImage(entity.getImage());
-              return dto;
-            })
-        .collect(Collectors.toList());
-  }
+    return prototypeMapper.findByUserId(userId);
+}
+
 }
