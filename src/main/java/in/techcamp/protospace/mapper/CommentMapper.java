@@ -6,7 +6,10 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Delete;
+
 
 // commentテーブルを操作するインターフェース
 @Mapper
@@ -33,4 +36,10 @@ public interface CommentMapper {
         ORDER BY c.id ASC
     """)
   List<CommentResponseDto> findByPrototypeId(Long prototypeId);
+
+  @Delete("DELETE FROm comments WHERE id = #{commentId}")
+  int deleteByCommentId(@Param("commentId") Long commentId);
+
+  @Select("SELECT * FROM comments WHERE id = #{commentId}")
+  CommentEntity selectByCommentId(@Param("commentId") Long commentId);
 }

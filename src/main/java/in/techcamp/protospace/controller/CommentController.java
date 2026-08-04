@@ -41,15 +41,15 @@ public class CommentController {
   }
 
   @DeleteMapping("/{commentId}")
-  public ResponseEntity<Map<String, String>> deletecomments(
+  public ResponseEntity<Map<String, String>> deletecomment(
     @PathVariable("prototypeid") Long prototypeId,
-    @RequestBody @Valid CommentRequestDto request,
+    @PathVariable("commentId") Long Id,
     Authentication authentication) {
 
       Long userId = Long.valueOf(authentication.getName());
-      commentService.deleteComment(prototypeId, userId, request);
+      commentService.deleteComment(prototypeId, userId, Id);
 
-      return ResponseEntity.status(HttpStatus.DELETED).body(Map.of("message","コメントを削除しました。"));
+      return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of("message","コメントを削除しました。"));
     }
     
   }

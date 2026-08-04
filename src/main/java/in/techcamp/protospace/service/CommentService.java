@@ -3,6 +3,7 @@ package in.techcamp.protospace.service;
 import in.techcamp.protospace.dto.CommentRequestDto;
 import in.techcamp.protospace.dto.CommentResponseDto;
 import in.techcamp.protospace.entity.CommentEntity;
+import in.techcamp.protospace.mapper.CommentMapper;
 import in.techcamp.protospace.repository.CommentRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -31,5 +32,19 @@ public class CommentService {
     commentRepository.insert(comment);
   }
 
-  public void deleteComment(Long prototypeId,)
+  // コメント削除機能
+  public void deleteComment(Long prototypeId, Long userId, Long Id)  {
+
+    // コメントを入手
+    CommentEntity existingComment = commentRepository.selectByCommentId(Id);
+    if(existingComment == null){
+      throw new IllegalArgumentException("指定されたコメントが見つかりません");
+    }
+    if(!existingComment.getUserId().equals(userId)) {
+      throw new SecurityException("他のユーザーのコメントを削除する権限がありません");
+    }
+    // 削除実行
+  commentRepository.deleteByCommentId(Id);
+  }
+
 }
