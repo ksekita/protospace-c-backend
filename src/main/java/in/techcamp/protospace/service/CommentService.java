@@ -33,7 +33,7 @@ public class CommentService {
   }
 
   // コメント削除機能
-  public void deleteComment(Long prototypeId, Long userId, Long Id)  {
+  public void deleteComment(Long userId, Long Id)  {
 
     // コメントを入手
     CommentEntity existingComment = commentRepository.selectByCommentId(Id);

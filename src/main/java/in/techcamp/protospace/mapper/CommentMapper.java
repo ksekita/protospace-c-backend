@@ -37,7 +37,7 @@ public interface CommentMapper {
     """)
   List<CommentResponseDto> findByPrototypeId(Long prototypeId);
 
-  @Delete("DELETE FROm comments WHERE id = #{commentId}")
+  @Delete("DELETE FROM comments WHERE id = #{commentId}")
   int deleteByCommentId(@Param("commentId") Long commentId);
 
   @Select("SELECT * FROM comments WHERE id = #{commentId}")

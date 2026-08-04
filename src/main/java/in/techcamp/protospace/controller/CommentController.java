@@ -52,4 +52,14 @@ public class CommentController {
       return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","コメントを削除しました。"));
     }
     
+    // コメント削除
+    // コメント削除に必要なものって？ what == sql文で必要としている削除の引数
+    // 所有者以外には コメントに紐づいているuserIDと現在ログインしている(削除しようとしてる)ユーザーが正しいか 
+    // コメントID,コメントをしたuserID,コメントがされている投稿ID
+    // コメントIDが引数 == 必要なものコメントID
+    // id content userId prtotypeId
+    // 1 コメントです 2 5  
+    // 3 aafw 2 1
+
+
   }
