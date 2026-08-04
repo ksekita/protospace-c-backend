@@ -21,4 +21,13 @@ public class CommentRepository {
   public List<CommentResponseDto> findByPrototypeId(Long prototypeId) {
     return commentMapper.findByPrototypeId(prototypeId);
   }
+
+  public CommentEntity selectByCommentId(Long commentId) {
+    return commentMapper.selectByCommentId(commentId);
+  }
+
+  public int deleteByCommentId(Long commentId){
+    return commentMapper.deleteByCommentId(commentId);
+  }
+
 }
