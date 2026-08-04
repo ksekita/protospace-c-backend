@@ -49,7 +49,7 @@ public class CommentController {
       Long userId = Long.valueOf(authentication.getName());
       commentService.deleteComment(prototypeId, userId, Id);
 
-      return ResponseEntity.status(HttpStatus.NO_CONTENT).body(Map.of("message","コメントを削除しました。"));
+      return ResponseEntity.status(HttpStatus.OK).body(Map.of("message","コメントを削除しました。"));
     }
     
   }
