@@ -2,6 +2,7 @@ package in.techcamp.protospace.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
@@ -18,6 +19,10 @@ public interface LikeMapper {
       "INSERT INTO likes (user_id, prototype_id) VALUES (#{userId}, #{prototypeId})")
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void insert(LikeEntity like);
+
+  //削除
+  @Delete("DELETE FROM likes WHERE id = #{id}")
+  void delete(Long id);
 
   //総いいね数のカウント
   @Select("SELECT COUNT(*) FROM likes WHERE prototype_id = :id")

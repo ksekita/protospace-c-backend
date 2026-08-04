@@ -17,11 +17,18 @@ public class LikeRepository {
     likeMapper.insert(like);
   }
 
+  //削除
+  public void delete(LikeEntity like){
+    likeMapper.delete(like.getId());
+  }
+
+  // いいねの数を取得
   public PrototypeEntity countLikes(Long prototypeId){
     return likeMapper.countLikes(prototypeId);
   }
 
+  // いいねされているか確認
   public boolean existsLike(Long prototypeId){
-    return likeMapper.existsLike(prototypeId); 
+    return likeMapper.existsLike(prototypeId);
   }
 }
