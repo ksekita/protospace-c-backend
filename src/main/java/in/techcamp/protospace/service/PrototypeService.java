@@ -48,12 +48,20 @@ public class PrototypeService {
   }
 
   // 記事一覧を取得し、検索に対応
- public List<PrototypeListDto> getAllPrototypes(String keyword) {
+ public List<PrototypeListDto> getAllPrototypes(String keyword,String sort) {
+  String order;
+  if(sort.equals("oldest")){
+    order="ASC";
+  }
+  else{
+    order="DESC";
+  }
+
     // キーワードが空の場合は全件取得、ある場合は検索メソッドを呼ぶ
     if (keyword == null || keyword.trim().isEmpty()) {
-      return prototypeMapper.findAll();
+      return prototypeMapper.findAll(order);
     } else {
-      return prototypeMapper.findByKeyword(keyword.trim());
+      return prototypeMapper.findByKeyword(keyword.trim(),order);
     }
   }
 

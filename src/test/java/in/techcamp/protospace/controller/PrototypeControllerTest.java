@@ -80,7 +80,7 @@ public class PrototypeControllerTest {
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(100);
 
     // モック（引数が null の場合の挙動を定義）
-    when(prototypeService.getAllPrototypes(null)).thenReturn(mockList);
+    when(prototypeService.getAllPrototypes("テスト", "latest")).thenReturn(mockList);
 
     mockMvc
         .perform(get("/api/prototypes/").header("Authorization", "Bearer " + token))
@@ -90,7 +90,7 @@ public class PrototypeControllerTest {
         .andExpect(jsonPath("$[99].title").value("テストタイトル100"));
 
     // 引数 null でサービスが呼ばれたか検証
-    verify(prototypeService).getAllPrototypes(null);
+   verify(prototypeService).getAllPrototypes("テスト", "latest");
   }
 
   // キーワードあり（検索）の場合のテスト
@@ -102,7 +102,7 @@ public class PrototypeControllerTest {
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(2);
 
     // モック（引数に "テスト" が渡された場合の挙動を定義）
-    when(prototypeService.getAllPrototypes("テスト")).thenReturn(mockList);
+    when(prototypeService.getAllPrototypes(null, "latest")).thenReturn(mockList);
 
     // param("keyword", "テスト") でクエリパラメータを付与してリクエスト
     mockMvc
@@ -113,7 +113,7 @@ public class PrototypeControllerTest {
         .andExpect(jsonPath("$.length()").value(2));
 
     // 引数 "テスト" でサービスが呼ばれたか検証
-    verify(prototypeService).getAllPrototypes("テスト");
+    verify(prototypeService).getAllPrototypes(null, "latest");
   }
 
   @Nested
@@ -170,7 +170,7 @@ public class PrototypeControllerTest {
       dto.setCatchCopy("テストキャッチコピー");
       dto.setImage("test.png");
 
-      when(prototypeService.getPrototypesByUserId(userId)).thenReturn(List.of(dto));
+     when(prototypeService.getPrototypesByUserId(userId, "latest")).thenReturn(List.of(dto));
 
       // 実行・検証
       mockMvc
@@ -185,7 +185,7 @@ public class PrototypeControllerTest {
           .andExpect(jsonPath("$[0].image").value("test.png"));
 
       // サービスが正しく呼び出されたか検証
-      verify(prototypeService).getPrototypesByUserId(userId);
+      verify(prototypeService).getPrototypesByUserId(userId, "latest");
     }
   }
 }

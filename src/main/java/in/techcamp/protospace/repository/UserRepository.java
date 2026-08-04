@@ -32,4 +32,9 @@ public class UserRepository {
   public int insertUser(UserEntity user) {
     return userMapper.insert(user);
   }
+
+  // 更新
+  public int updateUser(UserEntity user) {
+    return userMapper.update(user);
+  }
 }

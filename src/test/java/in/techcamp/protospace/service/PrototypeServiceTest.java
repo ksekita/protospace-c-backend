@@ -153,11 +153,11 @@ class PrototypeServiceTest {
       entity2.setImage("image2.png");
       entity2.setUserId(userId);
 
-      when(prototypeMapper.findByUserId(userId)).thenReturn(java.util.List.of(entity1, entity2));
+     when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(entity1, entity2));
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
-          prototypeService.getPrototypesByUserId(userId);
+          prototypeService.getPrototypesByUserId(userId, "latest");
 
       // 検証
       assertThat(result).hasSize(2);
@@ -177,11 +177,11 @@ class PrototypeServiceTest {
     void getPrototypesByUserId_Empty() {
       // 準備
       Long userId = 1L;
-      when(prototypeMapper.findByUserId(userId)).thenReturn(java.util.Collections.emptyList());
+      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.Collections.emptyList());
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
-          prototypeService.getPrototypesByUserId(userId);
+          prototypeService.getPrototypesByUserId(userId, "latest");
 
       // 検証
       assertThat(result).isEmpty();
