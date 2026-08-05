@@ -133,27 +133,29 @@ class PrototypeServiceTest {
   @DisplayName("特定ユーザーのプロトタイプ一覧取得処理 (getPrototypesByUserId)")
   class GetPrototypesByUserIdTest {
 
-    @Test
+   @Test
     @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに変換されて返却されること")
     void getPrototypesByUserId_Success() {
       // 準備
       Long userId = 1L;
 
-      PrototypeEntity entity1 = new PrototypeEntity();
-      entity1.setId(10L);
-      entity1.setTitle("タイトル1");
-      entity1.setCatchCopy("キャッチコピー1");
-      entity1.setImage("image1.png");
-      entity1.setUserId(userId);
+      // EntityではなくDTOのダミーデータを作成する
+      in.techcamp.protospace.dto.UserPrototypeListDto dto1 = new in.techcamp.protospace.dto.UserPrototypeListDto();
+      dto1.setId(10L);
+      dto1.setName("テストユーザー"); // 検証でテストユーザーという名前をチェックしているためセットします
+      dto1.setTitle("タイトル1");
+      dto1.setCatchCopy("キャッチコピー1");
+      dto1.setImage("image1.png");
 
-      PrototypeEntity entity2 = new PrototypeEntity();
-      entity2.setId(11L);
-      entity2.setTitle("タイトル2");
-      entity2.setCatchCopy("キャッチコピー2");
-      entity2.setImage("image2.png");
-      entity2.setUserId(userId);
+      in.techcamp.protospace.dto.UserPrototypeListDto dto2 = new in.techcamp.protospace.dto.UserPrototypeListDto();
+      dto2.setId(11L);
+      dto2.setName("テストユーザー");
+      dto2.setTitle("タイトル2");
+      dto2.setCatchCopy("キャッチコピー2");
+      dto2.setImage("image2.png");
 
-     when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(entity1, entity2));
+      // thenReturnにはDTOのリストを渡す
+      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(dto1, dto2));
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
