@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ResourceNotFoundException;
@@ -134,26 +135,26 @@ class PrototypeServiceTest {
   class GetPrototypesByUserIdTest {
 
     @Test
-    @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに変換されて返却されること")
+    @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに返却されること")
     void getPrototypesByUserId_Success() {
       // 準備
       Long userId = 1L;
 
-      PrototypeEntity entity1 = new PrototypeEntity();
-      entity1.setId(10L);
-      entity1.setTitle("タイトル1");
-      entity1.setCatchCopy("キャッチコピー1");
-      entity1.setImage("image1.png");
-      entity1.setUserId(userId);
+      UserPrototypeListDto dto1 = new UserPrototypeListDto();
+      dto1.setId(10L);
+      dto1.setTitle("タイトル1");
+      dto1.setCatchCopy("キャッチコピー1");
+      dto1.setImage("image1.png");
+      dto1.setName("テストユーザー");
 
-      PrototypeEntity entity2 = new PrototypeEntity();
-      entity2.setId(11L);
-      entity2.setTitle("タイトル2");
-      entity2.setCatchCopy("キャッチコピー2");
-      entity2.setImage("image2.png");
-      entity2.setUserId(userId);
+      UserPrototypeListDto dto2 = new UserPrototypeListDto();
+      dto2.setId(11L);
+      dto2.setTitle("タイトル2");
+      dto2.setCatchCopy("キャッチコピー2");
+      dto2.setImage("image2.png");
+      dto2.setName("テストユーザー");
 
-     when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(entity1, entity2));
+     when(prototypeMapper.findByUserId(userId, "latest")).thenReturn(java.util.List.of(dto1, dto2));
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
@@ -168,6 +169,7 @@ class PrototypeServiceTest {
       assertThat(result.get(0).getCatchCopy()).isEqualTo("キャッチコピー1");
       assertThat(result.get(0).getImage()).isEqualTo("image1.png");
 
+
       assertThat(result.get(1).getId()).isEqualTo(11L);
       assertThat(result.get(1).getTitle()).isEqualTo("タイトル2");
     }
@@ -177,7 +179,7 @@ class PrototypeServiceTest {
     void getPrototypesByUserId_Empty() {
       // 準備
       Long userId = 1L;
-      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.Collections.emptyList());
+      when(prototypeMapper.findByUserId(userId, "latest")).thenReturn(java.util.Collections.emptyList());
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
