@@ -166,9 +166,9 @@ public class PrototypeService {
     prototypeMapper.delete(id);
   }
 
-  public List<UserPrototypeListDto> getPrototypesByUserId(Long userId) {
+  public List<UserPrototypeListDto> getPrototypesByUserId(Long userId, String sort) {
 
-    return prototypeMapper.findByUserId(userId);
+    return prototypeMapper.findByUserId(userId, sort);
 }
 
 }

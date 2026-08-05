@@ -45,5 +45,5 @@ public interface PrototypeMapper {
 
   @Select(
       "SELECT p.id, u.name, p.title, p.catch_copy, p.image, p.user_id FROM prototypes p LEFT JOIN users u ON p.user_id = u.id WHERE user_id = #{userId}")
-  List<UserPrototypeListDto> findByUserId(Long userId);
+  List<UserPrototypeListDto> findByUserId(Long userId, String sort);
 }
