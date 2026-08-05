@@ -34,7 +34,7 @@ public class PrototypeService {
   private final LikeMapper likeMapper;
 
   // 記事詳細を取得
-  public PrototypeDetailResponseDto getPrototypeDetail(Long id) {
+  public PrototypeDetailResponseDto getPrototypeDetail(Long id,Long loggedInUserId) {
     PrototypeEntity prototype = prototypeRepository.findById(id);
     if (prototype == null) {
       throw new ResourceNotFoundException("プロトタイプが見つかりません");
@@ -43,6 +43,9 @@ public class PrototypeService {
     UserEntity user = userRepository.selectById(prototype.getUserId());
     String name = (user != null) ? user.getName() : null;
 
+    Long likeCount = likeMapper.countByPrototypeId(id);
+    boolean isLiked = (loggedInUserId != null && loggedInUserId != 0L) && likeMapper.existsLike(loggedInUserId, id);
+
     return new PrototypeDetailResponseDto(
         prototype.getId(),
         prototype.getTitle(),
@@ -50,11 +53,13 @@ public class PrototypeService {
         prototype.getConcept(),
         prototype.getImage(),
         prototype.getUserId(),
-        name);
+        name,
+        likeCount,
+        isLiked);
   }
 
   // 記事一覧を取得し、検索に対応
- public List<PrototypeListDto> getAllPrototypes(String keyword,String sort) {
+ public List<PrototypeListDto> getAllPrototypes(String keyword,String sort,Long loggedInUserId) {
   String order;
   if(sort.equals("oldest")){
     order="ASC";
@@ -65,9 +70,9 @@ public class PrototypeService {
 
     // キーワードが空の場合は全件取得、ある場合は検索メソッドを呼ぶ
     if (keyword == null || keyword.trim().isEmpty()) {
-      return prototypeMapper.findAll(order);
+      return prototypeMapper.findAll(order,loggedInUserId);
     } else {
-      return prototypeMapper.findByKeyword(keyword.trim(),order);
+      return prototypeMapper.findByKeyword(keyword.trim(),order,loggedInUserId);
     }
   }
 
@@ -172,7 +177,7 @@ public class PrototypeService {
     prototypeMapper.delete(id);
   }
 
-  public List<UserPrototypeListDto> getPrototypesByUserId(Long userId, String sort) {
+  public List<UserPrototypeListDto> getPrototypesByUserId(Long userId, String sort,Long loggedInUserId) {
     
     // 1. sort パラメータに応じて並び順（ORDER）を決定する
     String order;
@@ -183,7 +188,7 @@ public class PrototypeService {
     }
 
     // 2. Mapperを呼び出して、取得したDTOのリストをそのまま返す
-    return prototypeMapper.findByUserId(userId, order);
+    return prototypeMapper.findByUserId(userId, order,loggedInUserId);
   }
 
   @Transactional

@@ -1,5 +1,7 @@
 package in.techcamp.protospace.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -14,4 +16,8 @@ public class PrototypeDetailResponseDto {
   private String image;
   private Long userId;
   private String name;
+
+  private Long likeCount; 
+  @JsonProperty("isLiked")
+  private boolean isLiked;
 }

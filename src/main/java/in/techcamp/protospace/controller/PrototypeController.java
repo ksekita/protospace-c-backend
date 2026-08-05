@@ -38,18 +38,23 @@ public class PrototypeController {
   @GetMapping({"/",""})
   public ResponseEntity<List<PrototypeListDto>> getAllPrototypes(
       @RequestParam(name = "keyword", required = false) String keyword,
-      @RequestParam(name = "sort", defaultValue = "latest") String sort) {
-      
+      @RequestParam(name = "sort", defaultValue = "latest") String sort,
+      Authentication authentication) {
+      Long loggedInUserId = (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser"))
+        ? Long.valueOf(authentication.getName()) : 0L;
     // Serviceにkeywordを渡す
-    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes(keyword,sort);
+    List<PrototypeListDto> prototypes = prototypeService.getAllPrototypes(keyword,sort,loggedInUserId);
     return ResponseEntity.ok(prototypes);
   }
 
   // プロトタイプ詳細データの取得
   @GetMapping("/{id}")
   public ResponseEntity<PrototypeDetailResponseDto> getPrototypeDetail(
-      @PathVariable("id") Long id) {
-    PrototypeDetailResponseDto response = prototypeService.getPrototypeDetail(id);
+      @PathVariable("id") Long id,
+      Authentication authentication) {
+        Long loggedInUserId = (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser"))
+        ? Long.valueOf(authentication.getName()) : 0L;
+    PrototypeDetailResponseDto response = prototypeService.getPrototypeDetail(id,loggedInUserId);
     return ResponseEntity.ok(response);
   }
 
@@ -106,8 +111,11 @@ public class PrototypeController {
   @GetMapping("/users/{userId}")
   public ResponseEntity<List<UserPrototypeListDto>> getPrototypesByUserId(
       @PathVariable("userId") Long userId,
-      @RequestParam(name = "sort", defaultValue = "latest") String sort) {
-    List<UserPrototypeListDto> response = prototypeService.getPrototypesByUserId(userId,sort);
+      @RequestParam(name = "sort", defaultValue = "latest") String sort,
+      Authentication authentication) {
+        Long loggedInUserId = (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser"))
+        ? Long.valueOf(authentication.getName()) : 0L;
+    List<UserPrototypeListDto> response = prototypeService.getPrototypesByUserId(userId,sort,loggedInUserId);
     return ResponseEntity.ok(response);
   }
 
