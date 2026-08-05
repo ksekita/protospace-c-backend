@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ResourceNotFoundException;
@@ -142,7 +143,7 @@ class PrototypeServiceTest {
       // EntityではなくDTOのダミーデータを作成する
       in.techcamp.protospace.dto.UserPrototypeListDto dto1 = new in.techcamp.protospace.dto.UserPrototypeListDto();
       dto1.setId(10L);
-      dto1.setName("テストユーザー"); // 検証でテストユーザーという名前をチェックしているためセットします
+      dto1.setName("テストユーザー");
       dto1.setTitle("タイトル1");
       dto1.setCatchCopy("キャッチコピー1");
       dto1.setImage("image1.png");
@@ -170,6 +171,7 @@ class PrototypeServiceTest {
       assertThat(result.get(0).getCatchCopy()).isEqualTo("キャッチコピー1");
       assertThat(result.get(0).getImage()).isEqualTo("image1.png");
 
+
       assertThat(result.get(1).getId()).isEqualTo(11L);
       assertThat(result.get(1).getTitle()).isEqualTo("タイトル2");
     }
@@ -179,7 +181,7 @@ class PrototypeServiceTest {
     void getPrototypesByUserId_Empty() {
       // 準備
       Long userId = 1L;
-      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.Collections.emptyList());
+      when(prototypeMapper.findByUserId(userId, "latest")).thenReturn(java.util.Collections.emptyList());
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
