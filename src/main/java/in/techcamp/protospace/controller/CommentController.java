@@ -13,14 +13,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/prototypes/{prototypeId}/comments")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class CommentController {
 
   private final CommentService commentService;
 
   // コメント一覧の取得
-  @GetMapping
+  @GetMapping("/prototypes/{prototypeId}/comments")
   public ResponseEntity<List<CommentResponseDto>> getComments(
       @PathVariable("prototypeId") Long prototypeId) {
     List<CommentResponseDto> comments = commentService.getCommentsByPrototypeId(prototypeId);
@@ -28,7 +28,7 @@ public class CommentController {
   }
 
   // 新規コメントの投稿
-  @PostMapping
+  @PostMapping("/prototypes/{prototypeId}/comments")
   public ResponseEntity<Map<String, String>> createComment(
       @PathVariable("prototypeId") Long prototypeId,
       @RequestBody @Valid CommentRequestDto request,
@@ -40,7 +40,7 @@ public class CommentController {
     return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("message", "コメントを投稿しました。"));
   }
 
-  @DeleteMapping("/{commentId}")
+  @DeleteMapping("/comments/{commentId}")
   public ResponseEntity<Map<String, String>> deletecomment(
     @PathVariable("commentId") Long Id,
     Authentication authentication) {
