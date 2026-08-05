@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.boot.security.autoconfigure.SecurityProperties.User;
 
 // Userテーブルを操作するインターフェース
 @Mapper

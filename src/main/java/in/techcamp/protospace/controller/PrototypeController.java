@@ -1,15 +1,11 @@
 package in.techcamp.protospace.controller;
 
-import in.techcamp.protospace.dto.CommentRequestDto;
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
 import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.form.PrototypeForm;
-import in.techcamp.protospace.repository.LikeRepository;
-import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.service.PrototypeService;
-import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController

@@ -1,7 +1,6 @@
 package in.techcamp.protospace.service;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
-import in.techcamp.protospace.dto.PrototypeLikeRequestDto;
 import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
@@ -12,7 +11,6 @@ import in.techcamp.protospace.exception.ResourceNotFoundException;
 import in.techcamp.protospace.form.PrototypeForm;
 import in.techcamp.protospace.mapper.LikeMapper;
 import in.techcamp.protospace.mapper.PrototypeMapper;
-import in.techcamp.protospace.repository.LikeRepository;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import java.nio.file.Files;
@@ -20,7 +18,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
