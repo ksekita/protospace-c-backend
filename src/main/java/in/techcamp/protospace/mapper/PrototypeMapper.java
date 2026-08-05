@@ -43,7 +43,8 @@ public interface PrototypeMapper {
   @Delete("DELETE FROM prototypes WHERE id = #{id}")
   void delete(Long id);
 
-  @Select(
-      "SELECT p.id, u.name, p.title, p.catch_copy, p.image, p.user_id FROM prototypes p LEFT JOIN users u ON p.user_id = u.id WHERE user_id = #{userId}")
-  List<UserPrototypeListDto> findByUserId(Long userId, String sort);
+@Select("SELECT p.id, u.name, p.title, p.catch_copy, p.image, p.user_id " +
+          "FROM prototypes p LEFT JOIN users u ON p.user_id = u.id " +
+          "WHERE p.user_id = #{userId} ORDER BY p.id ${order}")
+  List<UserPrototypeListDto> findByUserId(@Param("userId") Long userId, @Param("order") String order);
 }

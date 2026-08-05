@@ -6,7 +6,6 @@ import in.techcamp.protospace.dto.UserInfoDto;
 import in.techcamp.protospace.dto.UserResponseDto;
 import in.techcamp.protospace.dto.UserUpdateDto;
 import in.techcamp.protospace.entity.UserEntity;
-import in.techcamp.protospace.mapper.UserMapper;
 import in.techcamp.protospace.exception.ValidationException;
 import in.techcamp.protospace.repository.AffiliationRepository;
 import in.techcamp.protospace.repository.PositionRepository;

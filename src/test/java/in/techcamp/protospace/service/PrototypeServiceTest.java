@@ -134,27 +134,29 @@ class PrototypeServiceTest {
   @DisplayName("特定ユーザーのプロトタイプ一覧取得処理 (getPrototypesByUserId)")
   class GetPrototypesByUserIdTest {
 
-    @Test
-    @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに返却されること")
+   @Test
+    @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに変換されて返却されること")
     void getPrototypesByUserId_Success() {
       // 準備
       Long userId = 1L;
 
-      UserPrototypeListDto dto1 = new UserPrototypeListDto();
+      // EntityではなくDTOのダミーデータを作成する
+      in.techcamp.protospace.dto.UserPrototypeListDto dto1 = new in.techcamp.protospace.dto.UserPrototypeListDto();
       dto1.setId(10L);
+      dto1.setName("テストユーザー");
       dto1.setTitle("タイトル1");
       dto1.setCatchCopy("キャッチコピー1");
       dto1.setImage("image1.png");
-      dto1.setName("テストユーザー");
 
-      UserPrototypeListDto dto2 = new UserPrototypeListDto();
+      in.techcamp.protospace.dto.UserPrototypeListDto dto2 = new in.techcamp.protospace.dto.UserPrototypeListDto();
       dto2.setId(11L);
+      dto2.setName("テストユーザー");
       dto2.setTitle("タイトル2");
       dto2.setCatchCopy("キャッチコピー2");
       dto2.setImage("image2.png");
-      dto2.setName("テストユーザー");
 
-     when(prototypeMapper.findByUserId(userId, "latest")).thenReturn(java.util.List.of(dto1, dto2));
+      // thenReturnにはDTOのリストを渡す
+      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(dto1, dto2));
 
       // 実行
       java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
