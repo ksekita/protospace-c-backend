@@ -74,8 +74,8 @@ public class PrototypeControllerTest {
   public void testGetAllPrototypes() throws Exception {
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(100);
 
-    // トークン経由でログインしているため loggedInUserId = 1L が渡る
-    when(prototypeService.getAllPrototypes(null, "latest", 1L)).thenReturn(mockList);
+    // 1Lを削除して元の状態に戻す
+    when(prototypeService.getAllPrototypes(null, "latest")).thenReturn(mockList);
 
     mockMvc
         .perform(get("/api/prototypes/").header("Authorization", "Bearer " + token))
@@ -84,14 +84,14 @@ public class PrototypeControllerTest {
         .andExpect(jsonPath("$[0].title").value("テストタイトル1"))
         .andExpect(jsonPath("$[99].title").value("テストタイトル100"));
 
-    verify(prototypeService).getAllPrototypes(null, "latest", 1L);
+    verify(prototypeService).getAllPrototypes(null, "latest");
   }
 
   @Test
   public void testGetAllPrototypesWithKeyword() throws Exception {
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(2);
 
-    when(prototypeService.getAllPrototypes("テスト", "latest", 1L)).thenReturn(mockList);
+    when(prototypeService.getAllPrototypes("テスト", "latest")).thenReturn(mockList);
 
     mockMvc
         .perform(get("/api/prototypes/")
@@ -100,7 +100,7 @@ public class PrototypeControllerTest {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.length()").value(2));
 
-    verify(prototypeService).getAllPrototypes("テスト", "latest", 1L);
+    verify(prototypeService).getAllPrototypes("テスト", "latest");
   }
 
   @Nested
@@ -151,7 +151,7 @@ public class PrototypeControllerTest {
       dto.setCatchCopy("テストキャッチコピー");
       dto.setImage("test.png");
 
-      when(prototypeService.getPrototypesByUserId(userId, "latest", 1L)).thenReturn(List.of(dto));
+      when(prototypeService.getPrototypesByUserId(userId, "latest")).thenReturn(List.of(dto));
 
       mockMvc
           .perform(
@@ -161,7 +161,7 @@ public class PrototypeControllerTest {
           .andExpect(jsonPath("$[0].id").value(10))
           .andExpect(jsonPath("$[0].name").value("テストユーザー"));
 
-      verify(prototypeService).getPrototypesByUserId(userId, "latest", 1L);
+      verify(prototypeService).getPrototypesByUserId(userId, "latest");
     }
   }
 
@@ -173,7 +173,7 @@ public class PrototypeControllerTest {
     @DisplayName("【正常系】キーワードとソート条件（oldest）を指定して検索できること")
     void getAllPrototypes_WithKeywordAndSort() throws Exception {
       List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(2);
-      when(prototypeService.getAllPrototypes("Java", "oldest", 1L)).thenReturn(mockList);
+      when(prototypeService.getAllPrototypes("Java", "oldest")).thenReturn(mockList);
 
       mockMvc
           .perform(
@@ -184,14 +184,14 @@ public class PrototypeControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(2));
 
-      verify(prototypeService).getAllPrototypes("Java", "oldest", 1L);
+      verify(prototypeService).getAllPrototypes("Java", "oldest");
     }
 
     @Test
     @DisplayName("【正常系】ソート条件のみ（oldest）を指定した場合、古い順で取得できること")
     void getAllPrototypes_WithSortOnly() throws Exception {
       List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(5);
-      when(prototypeService.getAllPrototypes(null, "oldest", 1L)).thenReturn(mockList);
+      when(prototypeService.getAllPrototypes(null, "oldest")).thenReturn(mockList);
 
       mockMvc
           .perform(
@@ -201,7 +201,7 @@ public class PrototypeControllerTest {
           .andExpect(status().isOk())
           .andExpect(jsonPath("$.length()").value(5));
 
-      verify(prototypeService).getAllPrototypes(null, "oldest", 1L);
+      verify(prototypeService).getAllPrototypes(null, "oldest");
     }
   }
 
@@ -210,45 +210,66 @@ public class PrototypeControllerTest {
   class GetPrototypeDetailApiTest {
 
     @Test
-    @DisplayName("【正常系】ログイン状態で詳細を取得した場合、いいね情報が含まれること")
+    @DisplayName("【正常系】詳細データを取得した場合、記事情報が返却されること")
+    void getPrototypeDetail_Success() throws Exception {
+      Long prototypeId = 1L;
+
+      PrototypeDetailResponseDto mockResponse = new PrototypeDetailResponseDto(
+          prototypeId, "タイトル", "キャッチ", "コンセプト", "image.png", 2L, "投稿者"
+      );
+
+      when(prototypeService.getPrototypeDetail(prototypeId)).thenReturn(mockResponse);
+
+      mockMvc.perform(get("/api/prototypes/" + prototypeId))
+             .andExpect(status().isOk())
+             .andExpect(jsonPath("$.title").value("タイトル"))
+             .andExpect(jsonPath("$.name").value("投稿者"));
+
+      verify(prototypeService).getPrototypeDetail(prototypeId);
+    }
+  }
+
+  // いいね状態取得専用APIのテスト
+  @Nested
+  @DisplayName("いいね状態取得API (GET /api/prototypes/{id}/like)")
+  class GetLikeStatusApiTest {
+
+    @Test
+    @DisplayName("【正常系】ログイン状態で取得した場合、いいね情報が含まれること")
     @WithMockUser(username = "1")
-    void getPrototypeDetail_LoggedIn() throws Exception {
+    void getLikeStatus_LoggedIn() throws Exception {
       Long prototypeId = 1L;
       Long loggedInUserId = 1L;
 
-      PrototypeDetailResponseDto mockResponse = new PrototypeDetailResponseDto(
-          prototypeId, "タイトル", "キャッチ", "コンセプト", "image.png", 2L, "投稿者", 10L, true
-      );
+      PrototypeLikeResponseDto mockResponse = new PrototypeLikeResponseDto(10L, true);
 
-      when(prototypeService.getPrototypeDetail(prototypeId, loggedInUserId)).thenReturn(mockResponse);
+      when(prototypeService.getLikeStatus(prototypeId, loggedInUserId)).thenReturn(mockResponse);
 
-      mockMvc.perform(get("/api/prototypes/" + prototypeId).header("Authorization", "Bearer " + token))
+      mockMvc.perform(get("/api/prototypes/" + prototypeId + "/like").header("Authorization", "Bearer " + token))
              .andExpect(status().isOk())
              .andExpect(jsonPath("$.likeCount").value(10))
              .andExpect(jsonPath("$.isLiked").value(true));
 
-      verify(prototypeService).getPrototypeDetail(prototypeId, loggedInUserId);
+      verify(prototypeService).getLikeStatus(prototypeId, loggedInUserId);
     }
 
     @Test
-    @DisplayName("【正常系】未ログイン状態で詳細を取得した場合、未ログインID(0L)としてServiceが呼ばれること")
-    void getPrototypeDetail_Anonymous() throws Exception {
+    @DisplayName("【正常系】未ログイン状態で取得した場合、未ログインID(0L)としてServiceが呼ばれること")
+    void getLikeStatus_Anonymous() throws Exception {
       Long prototypeId = 1L;
       Long anonymousUserId = 0L;
 
-      PrototypeDetailResponseDto mockResponse = new PrototypeDetailResponseDto(
-          prototypeId, "タイトル", "キャッチ", "コンセプト", "image.png", 2L, "投稿者", 100L, false
-      );
+      PrototypeLikeResponseDto mockResponse = new PrototypeLikeResponseDto(100L, false);
 
-      when(prototypeService.getPrototypeDetail(prototypeId, anonymousUserId)).thenReturn(mockResponse);
+      when(prototypeService.getLikeStatus(prototypeId, anonymousUserId)).thenReturn(mockResponse);
 
       // Authorization ヘッダーなしで送信
-      mockMvc.perform(get("/api/prototypes/" + prototypeId))
+      mockMvc.perform(get("/api/prototypes/" + prototypeId + "/like"))
              .andExpect(status().isOk())
              .andExpect(jsonPath("$.likeCount").value(100))
              .andExpect(jsonPath("$.isLiked").value(false));
 
-      verify(prototypeService).getPrototypeDetail(prototypeId, anonymousUserId);
+      verify(prototypeService).getLikeStatus(prototypeId, anonymousUserId);
     }
   }
 

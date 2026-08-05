@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
@@ -44,10 +45,9 @@ class PrototypeServiceTest {
   class GetPrototypeDetailTest {
 
     @Test
-    @DisplayName("【正常系】存在するIDを指定した場合、詳細情報といいね情報が返却されること（ログイン時）")
-    void getPrototypeDetail_Success_LoggedIn() {
+    @DisplayName("【正常系】存在するIDを指定した場合、詳細情報と投稿者名が返却されること")
+    void getPrototypeDetail_Success() {
       Long prototypeId = 1L;
-      Long loggedInUserId = 10L;
 
       PrototypeEntity prototype = new PrototypeEntity();
       prototype.setId(prototypeId);
@@ -63,15 +63,44 @@ class PrototypeServiceTest {
 
       when(prototypeRepository.findById(prototypeId)).thenReturn(prototype);
       when(userRepository.selectById(2L)).thenReturn(user);
-      when(likeMapper.countByPrototypeId(prototypeId)).thenReturn(5L);
-      when(likeMapper.existsLike(loggedInUserId, prototypeId)).thenReturn(true);
 
-      PrototypeDetailResponseDto result = prototypeService.getPrototypeDetail(prototypeId, loggedInUserId);
+      // loggedInUserId は不要になったので削除
+      PrototypeDetailResponseDto result = prototypeService.getPrototypeDetail(prototypeId);
 
       assertThat(result.getId()).isEqualTo(1L);
       assertThat(result.getTitle()).isEqualTo("ProtoSpace");
       assertThat(result.getName()).isEqualTo("テスト太郎");
-      assertThat(result.getLikeCount()).isEqualTo(5L);
+    }
+
+    @Test
+    @DisplayName("【異常系】存在しないIDを指定した場合、ResourceNotFoundExceptionが発生すること")
+    void getPrototypeDetail_NotFound_ThrowsException() {
+      when(prototypeRepository.findById(999L)).thenReturn(null);
+
+      assertThatThrownBy(() -> prototypeService.getPrototypeDetail(999L))
+          .isInstanceOf(ResourceNotFoundException.class)
+          .hasMessage("プロトタイプが見つかりません");
+    }
+  }
+
+  // いいね状態取得処理のテスト
+  @Nested
+  @DisplayName("いいね状態取得処理 (getLikeStatus)")
+  class GetLikeStatusTest {
+
+    @Test
+    @DisplayName("【正常系】ログインユーザーの場合、いいね総数と自分のいいね状態(true/false)が取得できること")
+    void getLikeStatus_Success_LoggedIn() {
+      Long prototypeId = 1L;
+      Long loggedInUserId = 10L;
+
+      when(likeMapper.countByPrototypeId(prototypeId)).thenReturn(5L);
+      when(likeMapper.existsLike(loggedInUserId, prototypeId)).thenReturn(true);
+
+      PrototypeLikeResponseDto result = prototypeService.getLikeStatus(prototypeId, loggedInUserId);
+
+      assertNotNull(result);
+      assertEquals(5L, result.getLikeCount());
       assertTrue(result.isLiked());
 
       verify(likeMapper).countByPrototypeId(prototypeId);
@@ -80,35 +109,19 @@ class PrototypeServiceTest {
 
     @Test
     @DisplayName("【正常系】未ログインユーザー (0L) の場合、existsLikeが呼ばれずisLikedがfalseになること")
-    void getPrototypeDetail_Success_Anonymous() {
+    void getLikeStatus_Success_Anonymous() {
       Long prototypeId = 1L;
       Long loggedInUserId = 0L;
 
-      PrototypeEntity prototype = new PrototypeEntity();
-      prototype.setId(prototypeId);
-      prototype.setUserId(2L);
-
-      when(prototypeRepository.findById(prototypeId)).thenReturn(prototype);
-      when(userRepository.selectById(anyLong())).thenReturn(new UserEntity());
       when(likeMapper.countByPrototypeId(prototypeId)).thenReturn(10L);
 
-      PrototypeDetailResponseDto result = prototypeService.getPrototypeDetail(prototypeId, loggedInUserId);
+      PrototypeLikeResponseDto result = prototypeService.getLikeStatus(prototypeId, loggedInUserId);
 
-      assertThat(result.getLikeCount()).isEqualTo(10L);
+      assertEquals(10L, result.getLikeCount());
       assertFalse(result.isLiked());
 
       verify(likeMapper).countByPrototypeId(prototypeId);
       verify(likeMapper, never()).existsLike(anyLong(), anyLong());
-    }
-
-    @Test
-    @DisplayName("【異常系】存在しないIDを指定した場合、ResourceNotFoundExceptionが発生すること")
-    void getPrototypeDetail_NotFound_ThrowsException() {
-      when(prototypeRepository.findById(999L)).thenReturn(null);
-
-      assertThatThrownBy(() -> prototypeService.getPrototypeDetail(999L, 0L))
-          .isInstanceOf(ResourceNotFoundException.class)
-          .hasMessage("プロトタイプが見つかりません");
     }
   }
 
@@ -167,7 +180,6 @@ class PrototypeServiceTest {
     @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに変換されて返却されること")
     void getPrototypesByUserId_Success() {
       Long userId = 1L;
-      Long loggedInUserId = 10L;
 
       UserPrototypeListDto dto1 = new UserPrototypeListDto();
       dto1.setId(10L);
@@ -183,10 +195,11 @@ class PrototypeServiceTest {
       dto2.setCatchCopy("キャッチコピー2");
       dto2.setImage("image2.png");
 
-      when(prototypeMapper.findByUserId(userId, "DESC", loggedInUserId)).thenReturn(java.util.List.of(dto1, dto2));
+      // loggedInUserId 不要
+      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(dto1, dto2));
 
       java.util.List<UserPrototypeListDto> result =
-          prototypeService.getPrototypesByUserId(userId, "latest", loggedInUserId);
+          prototypeService.getPrototypesByUserId(userId, "latest");
 
       assertThat(result).hasSize(2);
       assertThat(result.get(0).getId()).isEqualTo(10L);
@@ -197,12 +210,11 @@ class PrototypeServiceTest {
     @DisplayName("【正常系】投稿が0件の場合、空のリストが返却されること")
     void getPrototypesByUserId_Empty() {
       Long userId = 1L;
-      Long loggedInUserId = 10L;
 
-      when(prototypeMapper.findByUserId(userId, "DESC", loggedInUserId)).thenReturn(java.util.Collections.emptyList());
+      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.Collections.emptyList());
 
       java.util.List<UserPrototypeListDto> result =
-          prototypeService.getPrototypesByUserId(userId, "latest", loggedInUserId);
+          prototypeService.getPrototypesByUserId(userId, "latest");
 
       assertThat(result).isEmpty();
     }
