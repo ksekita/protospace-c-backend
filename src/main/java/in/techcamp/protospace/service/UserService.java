@@ -131,19 +131,19 @@ public class UserService {
     }
 
     // 本人確認
-    if(!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
-      throw new ValidationException(
-        Map.of("currentPassword", List.of("現在のパスワードが間違っています。")), "パスワードエラー");
-    }
+    // if(!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+    //   throw new ValidationException(
+    //     Map.of("currentPassword", List.of("現在のパスワードが間違っています。")), "パスワードエラー");
+    // }
 
   // usersテーブルの更新
     user.setName(dto.getName());
     user.setProfile(dto.getProfile());
 
     // 新しいパスワードの入力がある場合のみ
-    if(dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
-      user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
-    }
+    // if(dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+    //   user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+    // }
 
     userRepository.updateUser(user);
 

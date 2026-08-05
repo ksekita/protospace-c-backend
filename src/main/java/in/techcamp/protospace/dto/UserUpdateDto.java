@@ -1,6 +1,6 @@
 package in.techcamp.protospace.dto;
 
-import in.techcamp.protospace.validation.ValidPassword;
+// import in.techcamp.protospace.validation.ValidPassword;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -23,11 +23,11 @@ public class UserUpdateDto {
   @Size(max = 200, message = "プロフィールは200文字以内で入力してください")
   private String profile;
 
-  @NotBlank(message = "現在のパスワードは必須です")
-  private String currentPassword;
+  // @NotBlank(message = "現在のパスワードは必須です")
+  // private String currentPassword;
 
-  @Size(min = 6 , max = 64 , message = "新しいパスワードは6文字以上64字以内で入力してください")
-  @ValidPassword
-  private String newPassword;
+  // @Size(min = 6 , max = 64 , message = "新しいパスワードは6文字以上64字以内で入力してください")
+  // @ValidPassword
+  // private String newPassword;
 
 }
