@@ -27,7 +27,7 @@ public interface PrototypeMapper {
   @Options(useGeneratedKeys = true, keyProperty = "id")
   void insert(PrototypeEntity prototype);
 
-  // 全件一覧の取得
+  // 全件一覧の取得(サブクエリを作ることで、記事の総お気に入り数を取得)
 @Select("SELECT p.id, p.title, p.catch_copy, p.image, p.user_id, u.name, " +
           "(SELECT COUNT(*) FROM likes WHERE prototype_id = p.id) AS likeCount, " +
           "EXISTS(SELECT 1 FROM likes WHERE prototype_id = p.id AND user_id = #{loggedInUserId}) AS isLiked " +

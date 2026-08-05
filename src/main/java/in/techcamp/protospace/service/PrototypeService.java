@@ -179,18 +179,17 @@ public class PrototypeService {
 
   public List<UserPrototypeListDto> getPrototypesByUserId(Long userId, String sort,Long loggedInUserId) {
     
-    // 1. sort パラメータに応じて並び順（ORDER）を決定する
+    // sort パラメータに応じて並び順（ORDER）を決定する
     String order;
     if ("oldest".equals(sort)) {
       order = "ASC";
     } else {
       order = "DESC";
     }
-
-    // 2. Mapperを呼び出して、取得したDTOのリストをそのまま返す
     return prototypeMapper.findByUserId(userId, order,loggedInUserId);
   }
 
+  //お気に入りの切り替え
   @Transactional
   public PrototypeLikeResponseDto toggleLike(Long prototypeId,Long userId){
     boolean isLiked=likeMapper.existsLike(userId,prototypeId );

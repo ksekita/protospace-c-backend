@@ -119,6 +119,7 @@ public class PrototypeController {
     return ResponseEntity.ok(response);
   }
 
+  //お気に入り機能の切り替え
   @PostMapping("/{id}/like")
   public ResponseEntity<PrototypeLikeResponseDto> toggleLike(
     @PathVariable("id") Long id,
