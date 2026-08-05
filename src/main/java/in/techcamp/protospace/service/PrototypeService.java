@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -173,20 +175,18 @@ public class PrototypeService {
     prototypeMapper.delete(id);
   }
 
-  public List<UserPrototypeListDto> getPrototypesByUserId(Long userId,String sort) {
+  public List<UserPrototypeListDto> getPrototypesByUserId(Long userId, String sort) {
+    
+    // 1. sort パラメータに応じて並び順（ORDER）を決定する
+    String order;
+    if ("oldest".equals(sort)) {
+      order = "ASC";
+    } else {
+      order = "DESC";
+    }
 
-    // EntityのリストをDTOのリストに変換（詰め替え）
-    return entities.stream()
-        .map(
-            entity -> {
-              UserPrototypeListDto dto = new UserPrototypeListDto();
-              dto.setId(entity.getId());
-              dto.setTitle(entity.getTitle());
-              dto.setCatchCopy(entity.getCatchCopy());
-              dto.setImage(entity.getImage());
-              return dto;
-            })
-        .collect(Collectors.toList());
+    // 2. Mapperを呼び出して、取得したDTOのリストをそのまま返す
+    return prototypeMapper.findByUserId(userId, order);
   }
 
   @Transactional
