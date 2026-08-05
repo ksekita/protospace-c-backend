@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.factory.PrototypeFactory;
 import in.techcamp.protospace.security.JwtTokenProvider;
@@ -29,6 +30,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post; 
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -80,7 +83,7 @@ public class PrototypeControllerTest {
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(100);
 
     // モック（引数が null の場合の挙動を定義）
-    when(prototypeService.getAllPrototypes("テスト", "latest")).thenReturn(mockList);
+    when(prototypeService.getAllPrototypes(null, "latest")).thenReturn(mockList);
 
     mockMvc
         .perform(get("/api/prototypes/").header("Authorization", "Bearer " + token))
@@ -90,7 +93,7 @@ public class PrototypeControllerTest {
         .andExpect(jsonPath("$[99].title").value("テストタイトル100"));
 
     // 引数 null でサービスが呼ばれたか検証
-   verify(prototypeService).getAllPrototypes("テスト", "latest");
+   verify(prototypeService).getAllPrototypes(null, "latest");
   }
 
   // キーワードあり（検索）の場合のテスト
@@ -102,7 +105,7 @@ public class PrototypeControllerTest {
     List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(2);
 
     // モック（引数に "テスト" が渡された場合の挙動を定義）
-    when(prototypeService.getAllPrototypes(null, "latest")).thenReturn(mockList);
+    when(prototypeService.getAllPrototypes("テスト", "latest")).thenReturn(mockList);
 
     // param("keyword", "テスト") でクエリパラメータを付与してリクエスト
     mockMvc
@@ -113,7 +116,7 @@ public class PrototypeControllerTest {
         .andExpect(jsonPath("$.length()").value(2));
 
     // 引数 "テスト" でサービスが呼ばれたか検証
-    verify(prototypeService).getAllPrototypes(null, "latest");
+    verify(prototypeService).getAllPrototypes("テスト", "latest");
   }
 
   @Nested
@@ -186,6 +189,100 @@ public class PrototypeControllerTest {
 
       // サービスが正しく呼び出されたか検証
       verify(prototypeService).getPrototypesByUserId(userId, "latest");
+    }
+  }
+  @Nested
+  @DisplayName("プロトタイプ一覧・検索・並び替えAPI (GET /api/prototypes)")
+  class GetAllPrototypesApiTest {
+
+    @Test
+    @DisplayName("【正常系】キーワードとソート条件（oldest）を指定して検索できること")
+    @WithMockUser
+    void getAllPrototypes_WithKeywordAndSort() throws Exception {
+      // 準備
+      List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(2);
+      when(prototypeService.getAllPrototypes("Java", "oldest")).thenReturn(mockList);
+
+      // 実行・検証
+      mockMvc
+          .perform(
+              get("/api/prototypes/")
+                  .param("keyword", "Java")
+                  .param("sort", "oldest")
+                  .header("Authorization", "Bearer " + token))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(2));
+
+      verify(prototypeService).getAllPrototypes("Java", "oldest");
+    }
+
+    @Test
+    @DisplayName("【正常系】ソート条件のみ（oldest）を指定した場合、古い順で取得できること")
+    @WithMockUser
+    void getAllPrototypes_WithSortOnly() throws Exception {
+      // 準備
+      List<PrototypeListDto> mockList = PrototypeFactory.createDummyList(5);
+      when(prototypeService.getAllPrototypes(null, "oldest")).thenReturn(mockList);
+
+      // 実行・検証
+      mockMvc
+          .perform(
+              get("/api/prototypes/")
+                  .param("sort", "oldest")
+                  .header("Authorization", "Bearer " + token))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.length()").value(5));
+
+      verify(prototypeService).getAllPrototypes(null, "oldest");
+    }
+  }
+
+  @Nested
+  @DisplayName("いいねトグルAPI (POST /api/prototypes/{id}/like)")
+  class ToggleLikeApiTest {
+
+    @Test
+    @DisplayName("【正常系】いいねのトグル処理に成功し、最新のいいね数と状態が返ること")
+    @WithMockUser(username = "1") // ログインユーザーID = 1
+    void toggleLike_Success() throws Exception {
+      // 準備 (1Lのプロトタイプに対して、いいね数=5、isLiked=trueのレスポンスをモック化)
+      Long prototypeId = 1L;
+      Long userId = 1L;
+      PrototypeLikeResponseDto responseDto = new PrototypeLikeResponseDto(5L, true);
+
+      when(prototypeService.toggleLike(prototypeId, userId)).thenReturn(responseDto);
+
+      // 実行・検証
+      mockMvc
+          .perform(
+              post("/api/prototypes/" + prototypeId + "/like")
+                  .header("Authorization", "Bearer " + token)
+                  .with(csrf()))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.likeCount").value(5))
+          .andExpect(jsonPath("$.isLiked").value(true));
+
+      verify(prototypeService).toggleLike(prototypeId, userId);
+    }
+
+    @Test
+    @DisplayName("【異常系】Service層で例外が発生した場合、500 Internal Server Errorが返ること")
+    @WithMockUser(username = "1")
+    void toggleLike_ServerError() throws Exception {
+      // 準備
+      Long prototypeId = 1L;
+      Long userId = 1L;
+
+      when(prototypeService.toggleLike(prototypeId, userId))
+          .thenThrow(new RuntimeException("DBエラー"));
+
+      // 実行・検証
+      mockMvc
+          .perform(
+              post("/api/prototypes/" + prototypeId + "/like")
+                  .header("Authorization", "Bearer " + token)
+                  .with(csrf()))
+          .andExpect(status().isInternalServerError());
     }
   }
 }

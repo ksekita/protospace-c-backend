@@ -1,12 +1,16 @@
 package in.techcamp.protospace.controller;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.form.PrototypeForm;
 import in.techcamp.protospace.service.PrototypeService;
+
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @RequestMapping("/api/prototypes")
@@ -104,5 +109,21 @@ public class PrototypeController {
       @RequestParam(name = "sort", defaultValue = "latest") String sort) {
     List<UserPrototypeListDto> response = prototypeService.getPrototypesByUserId(userId,sort);
     return ResponseEntity.ok(response);
+  }
+
+  @PostMapping("/{id}/like")
+  public ResponseEntity<PrototypeLikeResponseDto> toggleLike(
+    @PathVariable("id") Long id,
+  Authentication authentication) {
+    try{
+      Long userId=Long.valueOf(authentication.getName());
+      PrototypeLikeResponseDto response=prototypeService.toggleLike(id,userId);
+      return ResponseEntity.ok(response);
+    }
+    catch(Exception e){
+      e.printStackTrace();
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+     
   }
 }

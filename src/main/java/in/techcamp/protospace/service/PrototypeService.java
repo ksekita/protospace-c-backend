@@ -1,12 +1,15 @@
 package in.techcamp.protospace.service;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
+import in.techcamp.protospace.entity.LikeEntity;
 import in.techcamp.protospace.exception.ResourceNotFoundException;
 import in.techcamp.protospace.form.PrototypeForm;
+import in.techcamp.protospace.mapper.LikeMapper;
 import in.techcamp.protospace.mapper.PrototypeMapper;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
@@ -15,8 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -26,6 +31,7 @@ public class PrototypeService {
   private final PrototypeMapper prototypeMapper;
   private final PrototypeRepository prototypeRepository;
   private final UserRepository userRepository;
+  private final LikeMapper likeMapper;
 
   // 記事詳細を取得
   public PrototypeDetailResponseDto getPrototypeDetail(Long id) {
@@ -167,8 +173,38 @@ public class PrototypeService {
   }
 
   public List<UserPrototypeListDto> getPrototypesByUserId(Long userId, String sort) {
+    
+    // 1. sort パラメータに応じて並び順（ORDER）を決定する
+    String order;
+    if ("oldest".equals(sort)) {
+      order = "ASC";
+    } else {
+      order = "DESC";
+    }
 
-    return prototypeMapper.findByUserId(userId, sort);
-}
+    // 2. Mapperを呼び出して、取得したDTOのリストをそのまま返す
+    return prototypeMapper.findByUserId(userId, order);
+  }
 
+  @Transactional
+  public PrototypeLikeResponseDto toggleLike(Long prototypeId,Long userId){
+    boolean isLiked=likeMapper.existsLike(userId,prototypeId );
+    if(isLiked){
+      likeMapper.delete(userId,prototypeId);
+      isLiked=false;
+    }
+    else{
+      //お気に入りの保存
+      LikeEntity like=new LikeEntity();
+      like.setUserId(userId);
+      like.setPrototypeId(prototypeId);
+      likeMapper.insert(like);
+      isLiked=true;
+    }
+
+    Long currentLikeCount=likeMapper.countByPrototypeId(prototypeId);
+
+    return new PrototypeLikeResponseDto(currentLikeCount,isLiked);
+
+  }
 }
