@@ -38,7 +38,7 @@ public class PrototypeController {
     if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
       return Long.valueOf(authentication.getName());
     }
-    return 0L;
+    return null;
   }
 
   @GetMapping({"/",""})

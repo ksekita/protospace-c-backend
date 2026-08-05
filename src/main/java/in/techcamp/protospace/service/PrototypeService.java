@@ -154,7 +154,10 @@ public class PrototypeService {
   // いいねの状態を取得する
   public PrototypeLikeResponseDto getLikeStatus(Long prototypeId, Long userId) {
     Long currentLikeCount = likeMapper.countByPrototypeId(prototypeId);
-    boolean isLiked = (userId != null && userId != 0L) && likeMapper.existsLike(userId, prototypeId);
+    boolean isLiked = false;
+    if (userId != null) {
+      isLiked = likeMapper.existsLike(userId, prototypeId);
+    }
     return new PrototypeLikeResponseDto(currentLikeCount, isLiked);
   }
 

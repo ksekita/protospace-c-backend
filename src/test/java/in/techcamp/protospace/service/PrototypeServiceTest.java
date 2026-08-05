@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -108,10 +107,10 @@ class PrototypeServiceTest {
     }
 
     @Test
-    @DisplayName("【正常系】未ログインユーザー (0L) の場合、existsLikeが呼ばれずisLikedがfalseになること")
+    @DisplayName("【正常系】未ログインユーザー (null) の場合、existsLikeが呼ばれずisLikedがfalseになること")
     void getLikeStatus_Success_Anonymous() {
       Long prototypeId = 1L;
-      Long loggedInUserId = 0L;
+      Long loggedInUserId = null; // ◀︎ null に変更
 
       when(likeMapper.countByPrototypeId(prototypeId)).thenReturn(10L);
 
@@ -121,7 +120,9 @@ class PrototypeServiceTest {
       assertFalse(result.isLiked());
 
       verify(likeMapper).countByPrototypeId(prototypeId);
-      verify(likeMapper, never()).existsLike(anyLong(), anyLong());
+      
+      // userIdがnullの場合はそもそも呼ばれない（DBへの無駄なアクセスを回避できている）ことを検証
+      verify(likeMapper, never()).existsLike(any(), any()); 
     }
   }
 

@@ -32,6 +32,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.mockito.ArgumentMatchers.isNull;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -234,7 +235,7 @@ public class PrototypeControllerTest {
   @DisplayName("いいね状態取得API (GET /api/prototypes/{id}/like)")
   class GetLikeStatusApiTest {
 
-    @Test
+   @Test
     @DisplayName("【正常系】ログイン状態で取得した場合、いいね情報が含まれること")
     @WithMockUser(username = "1")
     void getLikeStatus_LoggedIn() throws Exception {
@@ -253,15 +254,15 @@ public class PrototypeControllerTest {
       verify(prototypeService).getLikeStatus(prototypeId, loggedInUserId);
     }
 
-    @Test
-    @DisplayName("【正常系】未ログイン状態で取得した場合、未ログインID(0L)としてServiceが呼ばれること")
+   @Test
+    @DisplayName("【正常系】未ログイン状態で取得した場合、未ログインID(null)としてServiceが呼ばれること")
     void getLikeStatus_Anonymous() throws Exception {
       Long prototypeId = 1L;
-      Long anonymousUserId = 0L;
 
       PrototypeLikeResponseDto mockResponse = new PrototypeLikeResponseDto(100L, false);
 
-      when(prototypeService.getLikeStatus(prototypeId, anonymousUserId)).thenReturn(mockResponse);
+      // isNull() マッチャーを使用して null が渡されたときの挙動を明示的にモック化
+      when(prototypeService.getLikeStatus(eq(prototypeId), isNull())).thenReturn(mockResponse);
 
       // Authorization ヘッダーなしで送信
       mockMvc.perform(get("/api/prototypes/" + prototypeId + "/like"))
@@ -269,7 +270,7 @@ public class PrototypeControllerTest {
              .andExpect(jsonPath("$.likeCount").value(100))
              .andExpect(jsonPath("$.isLiked").value(false));
 
-      verify(prototypeService).getLikeStatus(prototypeId, anonymousUserId);
+      verify(prototypeService).getLikeStatus(eq(prototypeId), isNull());
     }
   }
 
