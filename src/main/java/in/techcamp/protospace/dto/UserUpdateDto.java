@@ -20,7 +20,7 @@ public class UserUpdateDto {
   private String affiliation;
 
   @NotBlank(message = "プロフィールは必須です")
-  @Size(max = 200, message = "プロフィールは200文字以内で入力してください")
+  @Size(max = 1000, message = "プロフィールは1000文字以内で入力してください")
   private String profile;
 
   @NotBlank(message = "現在のパスワードは必須です")
