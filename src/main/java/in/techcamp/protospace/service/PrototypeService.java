@@ -1,13 +1,18 @@
 package in.techcamp.protospace.service;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeLikeRequestDto;
+import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
+import in.techcamp.protospace.entity.LikeEntity;
 import in.techcamp.protospace.exception.ResourceNotFoundException;
 import in.techcamp.protospace.form.PrototypeForm;
+import in.techcamp.protospace.mapper.LikeMapper;
 import in.techcamp.protospace.mapper.PrototypeMapper;
+import in.techcamp.protospace.repository.LikeRepository;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
 import java.nio.file.Files;
@@ -18,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -27,6 +33,8 @@ public class PrototypeService {
   private final PrototypeMapper prototypeMapper;
   private final PrototypeRepository prototypeRepository;
   private final UserRepository userRepository;
+  private final LikeRepository likeRepository;
+  private final LikeMapper likeMapper;
 
   // 記事詳細を取得
   public PrototypeDetailResponseDto getPrototypeDetail(Long id) {
@@ -190,5 +198,27 @@ public class PrototypeService {
               return dto;
             })
         .collect(Collectors.toList());
+  }
+
+  @Transactional
+  public PrototypeLikeResponseDto toggleLike(Long prototypeId,Long userId){
+    boolean isLiked=likeMapper.existsLike(userId,prototypeId );
+    if(isLiked){
+      likeMapper.delete(userId,prototypeId);
+      isLiked=false;
+    }
+    else{
+      //お気に入りの保存
+      LikeEntity like=new LikeEntity();
+      like.setUserId(userId);
+      like.setPrototypeId(prototypeId);
+      likeMapper.insert(like);
+      isLiked=true;
+    }
+
+    Long currentLikeCount=likeMapper.countByPrototypeId(prototypeId);
+
+    return new PrototypeLikeResponseDto(currentLikeCount,isLiked);
+
   }
 }
