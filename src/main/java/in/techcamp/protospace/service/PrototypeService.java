@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +32,6 @@ public class PrototypeService {
   private final PrototypeMapper prototypeMapper;
   private final PrototypeRepository prototypeRepository;
   private final UserRepository userRepository;
-  private final LikeRepository likeRepository;
   private final LikeMapper likeMapper;
 
   // 記事詳細を取得
@@ -176,15 +174,6 @@ public class PrototypeService {
   }
 
   public List<UserPrototypeListDto> getPrototypesByUserId(Long userId,String sort) {
-    // Mapperを使ってデータベースから取得
-    String order;
-  if(sort.equals("oldest")){
-    order="ASC";
-  }
-  else{
-    order="DESC";
-  }
-    List<PrototypeEntity> entities = prototypeMapper.findByUserId(userId,order);
 
     // EntityのリストをDTOのリストに変換（詰め替え）
     return entities.stream()
