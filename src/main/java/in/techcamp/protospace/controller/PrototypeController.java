@@ -34,12 +34,20 @@ public class PrototypeController {
     this.prototypeService = prototypeService;
   }
 
-  // ログイン中のユーザーIDを取得する共通メソッド（未ログイン時は0Lを返す）
+  // ログイン中のユーザーIDを取得する共通メソッド（未ログイン時やエラー時は null を返す）
   private Long getLoggedInUserId(Authentication authentication) {
-    if (authentication != null && authentication.isAuthenticated() && !authentication.getName().equals("anonymousUser")) {
-      return Long.valueOf(authentication.getName());
+    // そもそも認証情報がない、または未認証の場合は null
+    if (authentication == null || !authentication.isAuthenticated()) {
+      return null;
     }
-    return null;
+    if (authentication.getName() == null || authentication.getName().equals("anonymousUser")) {
+      return null;
+    }
+    try {
+      return Long.valueOf(authentication.getName());
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 
   @GetMapping({"/",""})
