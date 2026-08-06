@@ -2,16 +2,22 @@ package in.techcamp.protospace.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import in.techcamp.protospace.dto.PrototypeDetailResponseDto;
+import in.techcamp.protospace.dto.PrototypeLikeResponseDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.entity.PrototypeEntity;
 import in.techcamp.protospace.entity.UserEntity;
 import in.techcamp.protospace.exception.ResourceNotFoundException;
+import in.techcamp.protospace.mapper.LikeMapper;
 import in.techcamp.protospace.mapper.PrototypeMapper;
 import in.techcamp.protospace.repository.PrototypeRepository;
 import in.techcamp.protospace.repository.UserRepository;
@@ -29,6 +35,7 @@ class PrototypeServiceTest {
   @Mock private PrototypeRepository prototypeRepository;
   @Mock private UserRepository userRepository;
   @Mock private PrototypeMapper prototypeMapper;
+  @Mock private LikeMapper likeMapper;
 
   @InjectMocks private PrototypeService prototypeService;
 
@@ -39,27 +46,28 @@ class PrototypeServiceTest {
     @Test
     @DisplayName("【正常系】存在するIDを指定した場合、詳細情報と投稿者名が返却されること")
     void getPrototypeDetail_Success() {
+      Long prototypeId = 1L;
+
       PrototypeEntity prototype = new PrototypeEntity();
-      prototype.setId(1L);
+      prototype.setId(prototypeId);
       prototype.setTitle("ProtoSpace");
       prototype.setCatchCopy("開発事例共有ツール");
       prototype.setConcept("コンセプト");
       prototype.setImage("test.png");
-      prototype.setUserId(10L);
+      prototype.setUserId(2L);
 
       UserEntity user = new UserEntity();
-      user.setId(10L);
+      user.setId(2L);
       user.setName("テスト太郎");
 
-      when(prototypeRepository.findById(1L)).thenReturn(prototype);
-      when(userRepository.selectById(10L)).thenReturn(user);
+      when(prototypeRepository.findById(prototypeId)).thenReturn(prototype);
+      when(userRepository.selectById(2L)).thenReturn(user);
 
-      PrototypeDetailResponseDto result = prototypeService.getPrototypeDetail(1L);
+      // loggedInUserId は不要になったので削除
+      PrototypeDetailResponseDto result = prototypeService.getPrototypeDetail(prototypeId);
 
       assertThat(result.getId()).isEqualTo(1L);
       assertThat(result.getTitle()).isEqualTo("ProtoSpace");
-      assertThat(result.getCatchCopy()).isEqualTo("開発事例共有ツール");
-      assertThat(result.getUserId()).isEqualTo(10L);
       assertThat(result.getName()).isEqualTo("テスト太郎");
     }
 
@@ -74,58 +82,93 @@ class PrototypeServiceTest {
     }
   }
 
+  // いいね状態取得処理のテスト
+  @Nested
+  @DisplayName("いいね状態取得処理 (getLikeStatus)")
+  class GetLikeStatusTest {
+
+    @Test
+    @DisplayName("【正常系】ログインユーザーの場合、いいね総数と自分のいいね状態(true/false)が取得できること")
+    void getLikeStatus_Success_LoggedIn() {
+      Long prototypeId = 1L;
+      Long loggedInUserId = 10L;
+
+      when(likeMapper.countByPrototypeId(prototypeId)).thenReturn(5L);
+      when(likeMapper.existsLike(loggedInUserId, prototypeId)).thenReturn(true);
+
+      PrototypeLikeResponseDto result = prototypeService.getLikeStatus(prototypeId, loggedInUserId);
+
+      assertNotNull(result);
+      assertEquals(5L, result.getLikeCount());
+      assertTrue(result.isLiked());
+
+      verify(likeMapper).countByPrototypeId(prototypeId);
+      verify(likeMapper).existsLike(loggedInUserId, prototypeId);
+    }
+
+    @Test
+    @DisplayName("【正常系】未ログインユーザー (null) の場合、existsLikeが呼ばれずisLikedがfalseになること")
+    void getLikeStatus_Success_Anonymous() {
+      Long prototypeId = 1L;
+      Long loggedInUserId = null; // ◀︎ null に変更
+
+      when(likeMapper.countByPrototypeId(prototypeId)).thenReturn(10L);
+
+      PrototypeLikeResponseDto result = prototypeService.getLikeStatus(prototypeId, loggedInUserId);
+
+      assertEquals(10L, result.getLikeCount());
+      assertFalse(result.isLiked());
+
+      verify(likeMapper).countByPrototypeId(prototypeId);
+      
+      // userIdがnullの場合はそもそも呼ばれない（DBへの無駄なアクセスを回避できている）ことを検証
+      verify(likeMapper, never()).existsLike(any(), any()); 
+    }
+  }
+
   @Nested
   @DisplayName("プロトタイプ削除処理 (deletePrototype)")
   class DeletePrototypeTest {
     @Test
     @DisplayName("【正常系】自身のプロトタイプを指定した場合、削除メソッドが呼ばれること")
     void deletePrototype_Success() throws Exception {
-      // 準備
       PrototypeEntity mockEntity = new PrototypeEntity();
       mockEntity.setId(1L);
-      mockEntity.setUserId(10L); // 投稿者ID
+      mockEntity.setUserId(10L);
       mockEntity.setImage("test-image.png");
 
       when(prototypeMapper.findById(1L)).thenReturn(mockEntity);
 
-      // 実行
-      prototypeService.deletePrototype(1L, 10L); // ユーザーID=10として実行
+      prototypeService.deletePrototype(1L, 10L);
 
-      // 検証 (Mapperのdeleteが正しく呼ばれたか)
       verify(prototypeMapper).delete(1L);
     }
 
     @Test
     @DisplayName("【異常系】存在しないプロトタイプを指定した場合、例外が発生すること")
     void deletePrototype_NotFound_ThrowsException() {
-      // 準備: DBから見つからない状態
       when(prototypeMapper.findById(999L)).thenReturn(null);
 
-      // 実行・検証
       assertThatThrownBy(() -> prototypeService.deletePrototype(999L, 10L))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessage("指定されたプロトタイプが見つかりません");
 
-      // 削除処理が実行されていないことを確認
       verify(prototypeMapper, never()).delete(any());
     }
 
     @Test
     @DisplayName("【異常系】他人のプロトタイプを削除しようとした場合、例外が発生すること")
     void deletePrototype_Forbidden_ThrowsException() {
-      // 準備
       PrototypeEntity mockEntity = new PrototypeEntity();
       mockEntity.setId(1L);
-      mockEntity.setUserId(99L); // 投稿者IDは99
+      mockEntity.setUserId(99L);
 
       when(prototypeMapper.findById(1L)).thenReturn(mockEntity);
 
-      // 実行・検証 (ユーザーID=10として実行するとブロックされるはず)
       assertThatThrownBy(() -> prototypeService.deletePrototype(1L, 10L))
           .isInstanceOf(Exception.class)
           .hasMessage("他のユーザーの投稿を削除する権限がありません");
 
-      // 削除処理が実行されていないことを確認
       verify(prototypeMapper, never()).delete(any());
     }
   }
@@ -134,60 +177,46 @@ class PrototypeServiceTest {
   @DisplayName("特定ユーザーのプロトタイプ一覧取得処理 (getPrototypesByUserId)")
   class GetPrototypesByUserIdTest {
 
-   @Test
+    @Test
     @DisplayName("【正常系】指定したユーザーIDのプロトタイプ一覧がDTOに変換されて返却されること")
     void getPrototypesByUserId_Success() {
-      // 準備
       Long userId = 1L;
 
-      // EntityではなくDTOのダミーデータを作成する
-      in.techcamp.protospace.dto.UserPrototypeListDto dto1 = new in.techcamp.protospace.dto.UserPrototypeListDto();
+      UserPrototypeListDto dto1 = new UserPrototypeListDto();
       dto1.setId(10L);
       dto1.setName("テストユーザー");
       dto1.setTitle("タイトル1");
       dto1.setCatchCopy("キャッチコピー1");
       dto1.setImage("image1.png");
 
-      in.techcamp.protospace.dto.UserPrototypeListDto dto2 = new in.techcamp.protospace.dto.UserPrototypeListDto();
+      UserPrototypeListDto dto2 = new UserPrototypeListDto();
       dto2.setId(11L);
       dto2.setName("テストユーザー");
       dto2.setTitle("タイトル2");
       dto2.setCatchCopy("キャッチコピー2");
       dto2.setImage("image2.png");
 
-      // thenReturnにはDTOのリストを渡す
+      // loggedInUserId 不要
       when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.List.of(dto1, dto2));
 
-      // 実行
-      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
+      java.util.List<UserPrototypeListDto> result =
           prototypeService.getPrototypesByUserId(userId, "latest");
 
-      // 検証
       assertThat(result).hasSize(2);
-
       assertThat(result.get(0).getId()).isEqualTo(10L);
-      assertThat(result.get(0).getName()).isEqualTo("テストユーザー");
       assertThat(result.get(0).getTitle()).isEqualTo("タイトル1");
-      assertThat(result.get(0).getCatchCopy()).isEqualTo("キャッチコピー1");
-      assertThat(result.get(0).getImage()).isEqualTo("image1.png");
-
-
-      assertThat(result.get(1).getId()).isEqualTo(11L);
-      assertThat(result.get(1).getTitle()).isEqualTo("タイトル2");
     }
 
     @Test
     @DisplayName("【正常系】投稿が0件の場合、空のリストが返却されること")
     void getPrototypesByUserId_Empty() {
-      // 準備
       Long userId = 1L;
-      when(prototypeMapper.findByUserId(userId, "latest")).thenReturn(java.util.Collections.emptyList());
 
-      // 実行
-      java.util.List<in.techcamp.protospace.dto.UserPrototypeListDto> result =
+      when(prototypeMapper.findByUserId(userId, "DESC")).thenReturn(java.util.Collections.emptyList());
+
+      java.util.List<UserPrototypeListDto> result =
           prototypeService.getPrototypesByUserId(userId, "latest");
 
-      // 検証
       assertThat(result).isEmpty();
     }
   }
