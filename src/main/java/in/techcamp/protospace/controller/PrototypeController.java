@@ -82,7 +82,7 @@ public class PrototypeController {
   @PutMapping("/{id}")
   public ResponseEntity<Map<String, String>> updatePrototype(
       @PathVariable("id") Long id,
-      @ModelAttribute PrototypeForm form,
+      @Valid @ModelAttribute PrototypeForm form,
       Authentication authentication) {
     try {
       Long userId = Long.valueOf(authentication.getName());
