@@ -6,6 +6,7 @@ import in.techcamp.protospace.dto.PrototypeListDto;
 import in.techcamp.protospace.dto.UserPrototypeListDto;
 import in.techcamp.protospace.form.PrototypeForm;
 import in.techcamp.protospace.service.PrototypeService;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +57,8 @@ public class PrototypeController {
   // プロトタイプ投稿機能
   @PostMapping("/")
   ResponseEntity<Map<String, String>> createPrototype(
-      @ModelAttribute PrototypeForm form, Authentication authentication) {
+      @Valid @ModelAttribute PrototypeForm form,
+      Authentication authentication) {
     try {
       Long userId = Long.valueOf(authentication.getName());
 
